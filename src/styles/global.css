@@ -1,0 +1,274 @@
+/* 叉傑克 XJack 個人網站
+   淺底深字、內文 18px、文字對比一律 ≥ 7:1（長輩也會看）。
+   品牌色：海軍藍 #1E3A5F ＋ 活力橘 #FF6B35；橘色對白底只有 2.8:1，只拿來畫圖形（點、線、條），不當文字色。
+   字體分工：標題用霞鶩文楷（像手寫日記，有人味）、內文用思源黑體、年份與數字用 Barlow Condensed（像比賽計時器）。 */
+
+:root {
+  color-scheme: light;
+  --paper: #ffffff;
+  --mist: #f2f5f9;
+  --ink: #14263f;
+  --navy: #1e3a5f;
+  --slate: #3b4d63;
+  --orange: #ff6b35;
+  --orange-soft: #ffe3d6;
+  --ember: #8c3410;
+  --rule: #d5dde7;
+
+  --font-hand: 'LXGW WenKai TC', 'Noto Sans TC', sans-serif;
+  --font-body: 'Noto Sans TC', -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --font-num: 'Barlow Condensed', 'Noto Sans TC', sans-serif;
+
+  --step--1: 1rem;
+  --step-0: 1.125rem;
+  --step-1: 1.375rem;
+  --step-2: 1.75rem;
+  --step-3: clamp(2rem, 1.4rem + 2.4vw, 2.75rem);
+  --step-4: clamp(2.5rem, 1.6rem + 4vw, 4.25rem);
+
+  --wrap: 1120px;
+  --read: 42rem;
+  --gutter: clamp(1rem, 4vw, 2rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.85;
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--navy);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--step-4); letter-spacing: 0.01em; }
+h2 { font-size: var(--step-3); }
+h3 { font-size: var(--step-1); }
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--navy);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+  text-decoration-color: var(--orange);
+}
+
+a:hover {
+  color: var(--ember);
+}
+
+:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.read {
+  max-width: var(--read);
+}
+
+.band {
+  background: var(--mist);
+}
+
+.section {
+  padding-block: clamp(3rem, 7vw, 5.5rem);
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.section-head p {
+  margin: 0;
+  color: var(--slate);
+}
+
+.more {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.muted {
+  color: var(--slate);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  background: var(--navy);
+  color: #fff;
+  padding: 0.5rem 1rem;
+}
+
+.skip-link:focus {
+  top: 1rem;
+  color: #fff;
+}
+
+/* 文章內文 */
+.prose {
+  max-width: var(--read);
+}
+
+.prose h2 {
+  font-size: var(--step-2);
+  margin: 2.4em 0 0.8em;
+}
+
+.prose h3 {
+  margin: 2em 0 0.6em;
+}
+
+.prose h4 {
+  font-size: var(--step-0);
+  margin: 1.8em 0 0.4em;
+  color: var(--navy);
+}
+
+.prose img {
+  margin: 1.8em auto 0.4em;
+  border-radius: 4px;
+}
+
+.prose figure {
+  margin: 1.8em 0;
+}
+
+.prose figcaption,
+.prose .caption {
+  font-size: var(--step--1);
+  color: var(--slate);
+  text-align: center;
+  margin-top: 0.4em;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+
+.prose li + li {
+  margin-top: 0.3em;
+}
+
+.prose blockquote {
+  margin: 1.6em 0;
+  padding: 0.2em 0 0.2em 1.2em;
+  border-left: 4px solid var(--orange);
+  color: var(--slate);
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--step--1);
+  display: block;
+  overflow-x: auto;
+}
+
+.prose th,
+.prose td {
+  border-bottom: 1px solid var(--rule);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+
+.prose iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+}
+
+.prose .photo-removed {
+  margin: 1.6em 0;
+  padding: 1em 1.2em;
+  border: 2px dashed var(--rule);
+  border-radius: 6px;
+  color: var(--slate);
+  font-size: var(--step--1);
+  text-align: center;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2.5em 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

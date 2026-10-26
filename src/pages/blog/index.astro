@@ -1,0 +1,68 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { getPosts } from '../../lib/blog';
+import { links } from '../../data/site';
+
+const posts = await getPosts();
+const byYear = new Map<number, typeof posts>();
+for (const p of posts) {
+  const y = p.data.date.getFullYear();
+  byYear.set(y, [...(byYear.get(y) ?? []), p]);
+}
+---
+
+<Base title="文章" description="叉傑克寫過的跑步數據分析、科學化訓練、RQ 創業與育兒文章。">
+  <section class="section">
+    <div class="wrap">
+      <header class="page-head read">
+        <h1>文章</h1>
+        <p class="muted">
+          從舊站「叉傑克不跑步聊數據」搬過來的 {posts.length} 篇文章，一字未改。近況多半寫在
+          <a href={links.facebook.url} rel="noopener" target="_blank">Facebook 粉絲專頁</a>。
+        </p>
+      </header>
+      {
+        [...byYear.entries()].map(([year, list]) => (
+          <section class="year" aria-labelledby={`y${year}`}>
+            <h2 id={`y${year}`} class="num year-label">{year}</h2>
+            <PostList posts={list} />
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-head {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-head h1 {
+    margin-bottom: 0.6rem;
+  }
+
+  .year {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: 1rem 2rem;
+    border-top: 1px solid var(--rule);
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .year-label {
+    font-family: var(--font-num);
+    font-weight: 600;
+    font-size: 2.6rem;
+    line-height: 1;
+    color: var(--navy);
+  }
+
+  @media (max-width: 680px) {
+    .year {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

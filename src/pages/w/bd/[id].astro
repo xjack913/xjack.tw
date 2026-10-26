@@ -1,0 +1,27 @@
+---
+// 舊站文章網址（https://xjack.tw/w/bd/1310）→ 新網址（/blog/1310/）
+import { getPosts, postUrl } from '../../../lib/blog';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts
+    .filter((post) => post.data.legacyId)
+    .map((post) => ({ params: { id: String(post.data.legacyId) }, props: { to: postUrl(post) } }));
+}
+
+const { to } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-Hant-TW">
+  <head>
+    <meta charset="utf-8" />
+    <title>文章搬家了</title>
+    <meta name="robots" content="noindex" />
+    <link rel="canonical" href={new URL(to, Astro.site)} />
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+  </head>
+  <body>
+    <p>這篇文章搬到 <a href={to}>{new URL(to, Astro.site).href}</a>。</p>
+  </body>
+</html>

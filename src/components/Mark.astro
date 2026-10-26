@@ -1,0 +1,13 @@
+---
+// 「叉」字標誌：兩條交叉的路線，一條海軍藍、一條活力橘
+interface Props {
+  size?: number;
+}
+const { size = 32 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+  <rect width="32" height="32" rx="7" fill="#1e3a5f"></rect>
+  <path d="M9 9 L23 23" stroke="#ffffff" stroke-width="4.2" stroke-linecap="round"></path>
+  <path d="M23 9 L9 23" stroke="#ff6b35" stroke-width="4.2" stroke-linecap="round"></path>
+</svg>
