@@ -14,7 +14,8 @@ export async function getPosts() {
 const normalize = (url: string) => {
   try {
     const u = new URL(url);
-    return `${u.hostname.replace(/^www\./, '')}${decodeURI(u.pathname).replace(/\/$/, '')}`;
+    // 運動筆記的文章網址靠 ?id= 區分，所以查詢字串要留著
+    return `${u.hostname.replace(/^www\./, '')}${decodeURI(u.pathname).replace(/\/$/, '')}${u.search}`;
   } catch {
     return url;
   }

@@ -70,10 +70,11 @@ export const projects: Project[] = [
   },
   {
     id: 'blog',
-    name: '叉傑克不跑步聊數據',
-    period: '2021 — 2022',
+    name: '十年的部落格',
+    period: '2014 — 2023',
     status: '已完成',
-    summary: '舊部落格，寫馬拉松數據分析、科學化訓練和育兒。5 篇文章全部搬到這個網站的「文章」。',
+    summary:
+      'Blogger「叉傑克-進化科學跑者之路」、Medium 與舊站「叉傑克不跑步聊數據」、運動筆記，寫訓練日誌、比賽心得、馬拉松數據分析和創業。52 篇全部搬到這個網站的「文章」。',
     url: '/blog/',
     urlLabel: '讀舊文章',
   },
