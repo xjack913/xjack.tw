@@ -1,0 +1,226 @@
+---
+// 首頁的招牌圖：把每一年當成跑錶上的一圈分段。
+// 柱高＝那一年記下幾件事（平方根比例，避免事情特別多的一年把其他年壓扁；確切件數標在柱子上），
+// 橘點＝那一年有重要時刻，下面寫那一年的代表事件。
+import { laps } from '../lib/milestones';
+
+const all = laps();
+const max = Math.max(...all.map((l) => l.count));
+const height = (count: number) => Math.max(10, Math.sqrt(count / max) * 100);
+---
+
+<figure class="laps" aria-labelledby="laps-cap">
+  <div class="scroller">
+    <ol class="track" style={`--n:${all.length}`}>
+      {
+        all.map((lap, i) => (
+          <li class="lap">
+            <a href={`/timeline/#y${lap.year}`} class="hit">
+              <span class="bar-zone" aria-hidden="true">
+                <span class="bar" style={`--h:${height(lap.count)}%;--i:${i}`}>
+                  <span class="count num">{lap.count}</span>
+                  {lap.majors > 0 && <span class="pin" />}
+                </span>
+              </span>
+              <span class="year num">{lap.year}</span>
+              <span class="what">{lap.headline.short ?? lap.headline.title}</span>
+              <span class="visually-hidden">，這一年記了 {lap.count} 件事</span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+  <figcaption id="laps-cap" class="muted">
+    每一年是一圈分段，柱子上的數字是那一年記下幾件事，橘點代表那一年有重要時刻。點年份看那一年發生了什麼。
+  </figcaption>
+</figure>
+
+<style>
+  .laps {
+    margin: 0;
+  }
+
+  .scroller {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: 0.5rem;
+  }
+
+  .track {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(4rem, 1fr));
+    gap: 0.25rem;
+    min-width: calc(var(--n) * 4.25rem);
+  }
+
+  .hit {
+    display: grid;
+    grid-template-rows: 11.5rem auto auto;
+    align-content: start;
+    gap: 0.25rem;
+    height: 100%;
+    padding: 0.5rem 0.3rem 0.6rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .hit:hover {
+    background: var(--paper);
+  }
+
+  .hit:hover .year {
+    text-decoration: underline;
+    text-decoration-color: var(--orange);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.2em;
+  }
+
+  .bar-zone {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding-top: 1.5rem;
+    border-bottom: 3px solid var(--navy);
+  }
+
+  .bar {
+    position: relative;
+    width: 72%;
+    height: var(--h);
+    background: var(--navy);
+    border-radius: 3px 3px 0 0;
+    transform-origin: bottom;
+    animation: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation-delay: calc(var(--i, 0) * 50ms);
+  }
+
+  .count {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0.2rem;
+    text-align: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1;
+  }
+
+  .pin {
+    position: absolute;
+    left: 50%;
+    top: -1.05rem;
+    width: 0.95rem;
+    height: 0.95rem;
+    margin-left: -0.475rem;
+    border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 3px var(--mist);
+  }
+
+  .year {
+    font-size: 1.45rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--navy);
+    padding-top: 0.4rem;
+  }
+
+  .what {
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--slate);
+  }
+
+  figcaption {
+    font-size: var(--step--1);
+    margin-top: 1rem;
+  }
+
+  @keyframes rise {
+    from {
+      transform: scaleY(0);
+    }
+  }
+
+  /* 手機：改成一列一年，柱子橫著長 */
+  @media (max-width: 700px) {
+    .scroller {
+      overflow: visible;
+    }
+
+    .track {
+      grid-template-columns: 1fr;
+      min-width: 0;
+      gap: 0;
+    }
+
+    .hit {
+      grid-template-columns: 4rem 1fr;
+      grid-template-rows: auto auto;
+      column-gap: 0.9rem;
+      row-gap: 0.2rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--rule);
+      border-radius: 0;
+    }
+
+    .bar-zone {
+      grid-column: 2;
+      grid-row: 1;
+      height: 1.3rem;
+      border-bottom: 0;
+      border-left: 3px solid var(--navy);
+      align-items: center;
+      padding-top: 0;
+      padding-right: 1.6rem;
+    }
+
+    .bar {
+      width: var(--h);
+      min-width: 1.8rem;
+      height: 100%;
+      border-radius: 0 3px 3px 0;
+      transform-origin: left;
+      animation-name: grow;
+    }
+
+    .count {
+      top: 50%;
+      transform: translateY(-50%);
+      text-align: right;
+      right: 0.4rem;
+      left: auto;
+      font-size: 0.95rem;
+    }
+
+    .pin {
+      left: auto;
+      right: -1.3rem;
+      top: 50%;
+      margin: -0.475rem 0 0;
+    }
+
+    .year {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      padding-top: 0;
+      align-self: center;
+    }
+
+    .what {
+      grid-column: 2;
+    }
+  }
+
+  @keyframes grow {
+    from {
+      transform: scaleX(0);
+    }
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+import Base from '../layouts/Base.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import { projects } from '../data/projects';
+---
+
+<Base title="作品" description="叉傑克做過的東西：RQ 跑力、跟岳母的十年之約、桐桐貓貓島、桐爸日記與更多。">
+  <section class="section">
+    <div class="wrap">
+      <header class="page-head read">
+        <h1>作品</h1>
+        <p class="muted">工作做的、陪家人做的、自己好玩做的，都放在這裡。</p>
+      </header>
+      <div class="list">
+        {projects.map((p) => <ProjectRow project={p} />)}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-head {
+    margin-bottom: 3rem;
+  }
+
+  .page-head h1 {
+    margin-bottom: 0.6rem;
+  }
+
+  .list {
+    display: grid;
+    gap: 3.5rem;
+  }
+</style>

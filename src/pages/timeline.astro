@@ -1,0 +1,260 @@
+---
+import Base from '../layouts/Base.astro';
+import { byYear, categories, formatMilestoneDate } from '../lib/milestones';
+import type { MilestoneCategory } from '../data/milestones';
+
+const years = [...byYear().entries()];
+const total = years.reduce((n, [, list]) => n + list.length, 0);
+const used = new Set(years.flatMap(([, list]) => list.map((m) => m.cat)));
+const filters = Object.entries(categories).filter(([k]) => used.has(k as MilestoneCategory));
+---
+
+<Base title="里程碑" description="叉傑克（許紘瑋）從求學、創立 RQ 跑力、成為爸爸到今天的重要時刻與成就。">
+  <section class="section">
+    <div class="wrap">
+      <header class="page-head">
+        <h1>里程碑</h1>
+        <p class="muted read">
+          跑步會把每一公里記成一段分段，這裡把人生的每一年記下來。目前收了 <span class="num strong">{total}</span>
+          件事，由新到舊排。橘色圓點是特別重要的時刻。
+        </p>
+      </header>
+
+      <div class="filters" role="group" aria-label="依類別篩選">
+        <button type="button" data-filter="all" aria-pressed="true">全部</button>
+        {
+          filters.map(([k, label]) => (
+            <button type="button" data-filter={k} aria-pressed="false">
+              {label}
+            </button>
+          ))
+        }
+      </div>
+      <p class="filter-status muted" aria-live="polite"></p>
+
+      {
+        years.map(([year, list]) => (
+          <section class="year" id={`y${year}`} aria-labelledby={`h${year}`}>
+            <h2 class="year-num num" id={`h${year}`}>
+              {year}
+            </h2>
+            <ol class="events">
+              {list.map((m) => (
+                <li class:list={['event', { major: m.major }]} data-cat={m.cat}>
+                  <span class="dot" aria-hidden="true" />
+                  <div class="meta">
+                    <time class="num">{formatMilestoneDate(m.date)}</time>
+                    <span class="cat">{categories[m.cat]}</span>
+                    {m.major && <span class="visually-hidden">（重要時刻）</span>}
+                  </div>
+                  <div class="content">
+                    <h3>{m.title}</h3>
+                    {m.text && <p set:html={m.text} />}
+                    {m.link && (
+                      <p class="link">
+                        <a href={m.link} target={m.link.startsWith('/') ? undefined : '_blank'} rel="noopener">
+                          {m.linkLabel ?? '看更多'}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<script>
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('.filters button')];
+  const events = [...document.querySelectorAll<HTMLElement>('.event')];
+  const years = [...document.querySelectorAll<HTMLElement>('.year')];
+  const status = document.querySelector<HTMLElement>('.filter-status');
+
+  function apply(filter: string) {
+    let shown = 0;
+    for (const ev of events) {
+      const show = filter === 'all' || ev.dataset.cat === filter;
+      ev.hidden = !show;
+      if (show) shown++;
+    }
+    for (const y of years) {
+      y.hidden = !y.querySelector('.event:not([hidden])');
+    }
+    for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.filter === filter));
+    if (status) status.textContent = filter === 'all' ? '' : `顯示 ${shown} 件`;
+  }
+
+  for (const b of buttons) b.addEventListener('click', () => apply(b.dataset.filter ?? 'all'));
+</script>
+
+<style>
+  .page-head {
+    margin-bottom: 2rem;
+  }
+
+  .page-head h1 {
+    margin-bottom: 0.6rem;
+  }
+
+  .strong {
+    font-weight: 700;
+    font-size: 1.3em;
+    color: var(--navy);
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .filters button {
+    font: inherit;
+    font-size: var(--step--1);
+    font-weight: 500;
+    color: var(--navy);
+    background: var(--paper);
+    border: 2px solid var(--rule);
+    border-radius: 999px;
+    padding: 0.3rem 1rem;
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  .filters button:hover {
+    border-color: var(--navy);
+  }
+
+  .filters button[aria-pressed='true'] {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+  }
+
+  .filter-status {
+    min-height: 1.85em;
+    font-size: var(--step--1);
+  }
+
+  .year {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: 0 2rem;
+    padding-top: 2rem;
+  }
+
+  .year[hidden] {
+    display: none;
+  }
+
+  .year-num {
+    font-size: clamp(2.6rem, 2rem + 2vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--navy);
+    position: sticky;
+    top: 1rem;
+    align-self: start;
+  }
+
+  .events {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 1rem;
+    border-left: 3px solid var(--rule);
+  }
+
+  .event {
+    position: relative;
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 0.25rem 1.5rem;
+    padding: 0 0 1.75rem 1.75rem;
+  }
+
+  .event[hidden] {
+    display: none;
+  }
+
+  .dot {
+    position: absolute;
+    left: -9px;
+    top: 0.45rem;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 3px solid var(--navy);
+  }
+
+  .major .dot {
+    left: -12px;
+    top: 0.3rem;
+    width: 21px;
+    height: 21px;
+    background: var(--orange);
+    border-color: var(--orange);
+    box-shadow: 0 0 0 4px var(--orange-soft);
+  }
+
+  .meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.4;
+    padding-top: 0.15rem;
+  }
+
+  .meta time {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .cat {
+    font-size: var(--step--1);
+    color: var(--slate);
+  }
+
+  .content h3 {
+    font-size: var(--step-1);
+    margin-bottom: 0.25rem;
+  }
+
+  .major .content h3 {
+    font-size: var(--step-2);
+  }
+
+  .content p {
+    margin-bottom: 0.4rem;
+  }
+
+  .link {
+    font-weight: 500;
+  }
+
+  @media (max-width: 760px) {
+    .year {
+      grid-template-columns: 1fr;
+    }
+
+    .year-num {
+      position: static;
+      margin-bottom: 1rem;
+    }
+
+    .event {
+      grid-template-columns: 1fr;
+    }
+
+    .meta {
+      flex-direction: row;
+      gap: 0.75rem;
+      align-items: baseline;
+    }
+  }
+</style>

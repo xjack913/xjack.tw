@@ -1,0 +1,106 @@
+---
+import type { Project } from '../data/projects';
+
+interface Props {
+  project: Project;
+  compact?: boolean;
+}
+const { project: p, compact = false } = Astro.props;
+const external = p.url && !p.url.startsWith('/');
+---
+
+<article class:list={['project', { compact, 'has-image': !!p.image }]} id={p.id}>
+  {
+    p.image && (
+      <a class="shot" href={p.url} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined} tabindex="-1" aria-hidden="true">
+        <img src={p.image} alt={p.imageAlt ?? ''} loading="lazy" width="1200" height="630" />
+      </a>
+    )
+  }
+  <div class="text">
+    <p class="meta">
+      <span class="num period">{p.period}</span>
+      <span class="status">{p.status}</span>
+    </p>
+    <h3>{p.name}</h3>
+    <p>{p.summary}</p>
+    {!compact && p.body && <p class="body" set:html={p.body} />}
+    {
+      p.url && (
+        <p class="go">
+          <a href={p.url} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+            {p.urlLabel ?? '看看'}
+          </a>
+        </p>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .project {
+    display: grid;
+    gap: 1rem 2.5rem;
+  }
+
+  .project.has-image {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: center;
+  }
+
+  .shot img {
+    width: 100%;
+    aspect-ratio: 1200 / 630;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    background: var(--mist);
+  }
+
+  .meta {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    margin-bottom: 0.2rem;
+  }
+
+  .period {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .status {
+    font-size: var(--step--1);
+    color: var(--slate);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 0 0.7rem;
+    line-height: 1.7;
+  }
+
+  h3 {
+    font-size: var(--step-2);
+    margin-bottom: 0.5rem;
+  }
+
+  .body {
+    color: var(--slate);
+  }
+
+  .go {
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .project:not(.has-image) {
+    border-left: 4px solid var(--orange);
+    padding-left: 1.5rem;
+  }
+
+  @media (max-width: 760px) {
+    .project.has-image {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

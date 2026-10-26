@@ -1,0 +1,67 @@
+---
+import { links, person } from '../data/site';
+
+const year = new Date().getFullYear();
+const list = [links.facebook, links.instagram, links.medium, links.github, links.rq];
+---
+
+<footer class="site-footer">
+  <div class="wrap grid">
+    <div>
+      <p class="motto">{person.belief}</p>
+      <p class="muted small">© {year} {person.realName}（{person.name} {person.nameEn}）</p>
+    </div>
+    <nav aria-label="社群連結">
+      <ul>
+        {
+          list.map((l) => (
+            <li>
+              <a href={l.url} rel="me noopener" target="_blank">
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href="/rss.xml">RSS 訂閱</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 4px solid var(--navy);
+    background: var(--mist);
+    padding-block: 2.5rem 2rem;
+    margin-top: 2rem;
+  }
+
+  .grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1.5rem 3rem;
+  }
+
+  .motto {
+    font-family: var(--font-hand);
+    font-size: var(--step-1);
+    color: var(--navy);
+    margin-bottom: 0.4rem;
+  }
+
+  .small {
+    font-size: var(--step--1);
+    margin: 0;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    max-width: 30rem;
+  }
+</style>
