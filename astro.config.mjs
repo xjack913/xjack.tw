@@ -9,7 +9,8 @@ export default defineConfig({
   site,
   trailingSlash: 'ignore',
   build: { format: 'directory' },
-  integrations: [sitemap()],
+  // 舊網址轉址頁不放進網站地圖
+  integrations: [sitemap({ filter: (page) => !new URL(page).pathname.startsWith('/w/') })],
   // 舊站（RQ 官網系統）的固定頁面網址，換網域後仍要能點得到
   redirects: {
     '/web/xjack/home': '/',
