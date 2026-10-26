@@ -32,8 +32,17 @@ const ogImage = post.data.cover?.src;
         <p class="meta">
           <time class="num" datetime={iso}>{formatDate(post.data.date)}</time>
           {
-            post.data.legacyUrl && (
-              <span class="muted">原刊於舊站「叉傑克不跑步聊數據」</span>
+            post.data.origin && (
+              <span class="muted">
+                原刊於
+                {post.data.originalUrl && !post.data.originalUrl.includes('xjack.tw/') ? (
+                  <a href={post.data.originalUrl} target="_blank" rel="noopener">
+                    「{post.data.origin}」
+                  </a>
+                ) : (
+                  `「${post.data.origin}」`
+                )}
+              </span>
             )
           }
         </p>
