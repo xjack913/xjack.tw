@@ -3,8 +3,9 @@ import Base from '../layouts/Base.astro';
 import { person, links } from '../data/site';
 import { story, beliefs, english } from '../data/about';
 import { media } from '../data/media';
+import { education, publications, patents } from '../data/academic';
 
-const contactLinks = [links.facebook, links.instagram, links.medium, links.github];
+const contactLinks = [links.facebook, links.instagram, links.youtube, links.medium, links.linkedin, links.github];
 ---
 
 <Base title="關於我" description={`${person.realName}（${person.name} ${person.nameEn}）：${person.intro}`}>
@@ -70,6 +71,65 @@ const contactLinks = [links.facebook, links.instagram, links.medium, links.githu
             </blockquote>
           ))
         }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="research">
+    <div class="wrap">
+      <h2 class="block-title">學歷與研究</h2>
+      <div class="edu-grid">
+        <div>
+          <h3 class="sub">學歷</h3>
+          <ol class="edu">
+            {
+              education.map((e) => (
+                <li>
+                  <span class="num yrs">{e.years}</span>
+                  <span>
+                    {e.school}
+                    <span class="muted">（{e.degree}）</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+          <h3 class="sub">專利</h3>
+          <ul class="plain">
+            {
+              patents.map((p) => (
+                <li>
+                  <span class="num yrs">{p.year}</span> {p.title}
+                  <span class="muted">（{p.authors}）</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div>
+          <h3 class="sub">論文</h3>
+          <p class="muted note">東華 GAMELab 時期和戴文凱教授合作的電腦繪圖與遊戲研究，英文署名 Hung-Wei Hsu。</p>
+          <ol class="pubs">
+            {
+              publications.map((p) => (
+                <li>
+                  <span class="num yrs">{p.year}</span>
+                  <span>
+                    {p.url ? (
+                      <a href={p.url} target="_blank" rel="noopener" lang="en">
+                        {p.title}
+                      </a>
+                    ) : (
+                      <span lang="en">{p.title}</span>
+                    )}
+                    <span class="venue">{p.venue}</span>
+                    <span class="muted authors" lang="en">{p.authors}</span>
+                  </span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
       </div>
     </div>
   </section>
@@ -280,7 +340,70 @@ const contactLinks = [links.facebook, links.instagram, links.medium, links.githu
     line-height: 1.7;
   }
 
+
+  .edu-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: 2rem 4rem;
+  }
+
+  .sub {
+    font-size: var(--step-1);
+    margin: 0 0 0.75rem;
+  }
+
+  .sub:not(:first-child) {
+    margin-top: 2rem;
+  }
+
+  .edu,
+  .pubs,
+  .plain {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .edu li,
+  .pubs li,
+  .plain li {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 0.2rem 1rem;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .pubs li {
+    grid-template-columns: 3.5rem 1fr;
+  }
+
+  .plain li {
+    display: block;
+  }
+
+  .yrs {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--navy);
+  }
+
+  .venue,
+  .authors {
+    display: block;
+    font-size: var(--step--1);
+    line-height: 1.6;
+  }
+
+  .note {
+    font-size: var(--step--1);
+  }
+
   @media (max-width: 760px) {
+    .edu-grid {
+      grid-template-columns: 1fr;
+    }
+
     .intro-grid {
       grid-template-columns: 1fr;
     }

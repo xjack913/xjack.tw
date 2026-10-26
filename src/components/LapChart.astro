@@ -22,9 +22,9 @@ const height = (count: number) => Math.max(10, Math.sqrt(count / max) * 100);
                   {lap.majors > 0 && <span class="pin" />}
                 </span>
               </span>
-              <span class="year num">{lap.year}</span>
+              <span class="year num">{lap.label}</span>
               <span class="what">{lap.headline.short ?? lap.headline.title}</span>
-              <span class="visually-hidden">，這一年記了 {lap.count} 件事</span>
+              <span class="visually-hidden">，記了 {lap.count} 件事</span>
             </a>
           </li>
         ))
