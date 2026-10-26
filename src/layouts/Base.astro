@@ -23,6 +23,8 @@ const {
 const siteTitle = `${person.name} ${person.nameEn}｜${person.realName}`;
 const fullTitle = title ? `${title}｜${person.name} ${person.nameEn}` : siteTitle;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// 驗收用的子網域不讓搜尋引擎收錄，正式網域才開放
+const indexable = Astro.site?.hostname === 'xjack.tw';
 const ogImage = new URL(image, Astro.site);
 
 const personLd = {
@@ -47,6 +49,7 @@ const personLd = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {!indexable && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title={`${person.name}的文章`} href="/rss.xml" />

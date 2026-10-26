@@ -63,7 +63,7 @@
 
 ## 7. 正式切換步驟（驗收通過後才做）
 
-1. 把 repo 的 Actions 變數 `SITE_URL` 設成 `https://xjack.tw`，`public/CNAME` 改成 `xjack.tw`，重新部署。
+1. 把 repo 的 Actions 變數 `SITE_URL` 設成 `https://xjack.tw`，`public/CNAME` 改成 `xjack.tw`，重新部署。網址一換成 `xjack.tw`，`robots.txt` 和每頁的 `noindex` 會自動改成開放搜尋引擎收錄（驗收期間 `new.xjack.tw` 整站不收錄）。
 2. Cloudflare：`xjack.tw` 由指向 RQ 的 AWS 負載平衡器，改成 GitHub Pages 的四筆 A 紀錄（185.199.108–111.153）＋ AAAA，關掉代理（灰雲）；`www` CNAME 改指 `xjack913.github.io`。
 3. GitHub Pages 自訂網域改成 `xjack.tw`，等 HTTPS 憑證發好後打開「強制 HTTPS」。
 4. `new.xjack.tw` 保留一陣子當備用，之後刪掉 DNS 紀錄。
