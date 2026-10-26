@@ -2,11 +2,14 @@
 import Base from '../layouts/Base.astro';
 import { byYear, categories, formatMilestoneDate } from '../lib/milestones';
 import type { MilestoneCategory } from '../data/milestones';
+import { legacyLinkMap } from '../lib/blog';
 
 const years = [...byYear().entries()];
 const total = years.reduce((n, [, list]) => n + list.length, 0);
 const used = new Set(years.flatMap(([, list]) => list.map((m) => m.cat)));
 const filters = Object.entries(categories).filter(([k]) => used.has(k as MilestoneCategory));
+// 連到舊部落格、Medium 的里程碑，若文章已搬來就改連站內
+const resolve = await legacyLinkMap();
 ---
 
 <Base title="里程碑" description="叉傑克（許紘瑋）從求學、創立 RQ 跑力、成為爸爸到今天的重要時刻與成就。">
@@ -50,13 +53,17 @@ const filters = Object.entries(categories).filter(([k]) => used.has(k as Milesto
                   <div class="content">
                     <h3>{m.title}</h3>
                     {m.text && <p set:html={m.text} />}
-                    {m.link && (
-                      <p class="link">
-                        <a href={m.link} target={m.link.startsWith('/') ? undefined : '_blank'} rel="noopener">
-                          {m.linkLabel ?? '看更多'}
-                        </a>
-                      </p>
-                    )}
+                    {m.link && (() => {
+                      const href = resolve(m.link)!;
+                      const external = !href.startsWith('/');
+                      return (
+                        <p class="link">
+                          <a href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+                            {m.linkLabel ?? '看更多'}
+                          </a>
+                        </p>
+                      );
+                    })()}
                   </div>
                 </li>
               ))}

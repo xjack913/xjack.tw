@@ -18,9 +18,12 @@ const { posts, compact = false } = Astro.props;
             <Image class="cover" src={post.data.cover} alt="" width={320} height={200} fit="cover" loading="lazy" />
           ) : null}
           <span class="body">
-            <time class="num date" datetime={post.data.date.toISOString().slice(0, 10)}>
-              {formatDate(post.data.date)}
-            </time>
+            <span class="meta">
+              <time class="num date" datetime={post.data.date.toISOString().slice(0, 10)}>
+                {formatDate(post.data.date)}
+              </time>
+              {post.data.origin && !compact ? <span class="origin">{post.data.origin}</span> : null}
+            </span>
             <span class="title">{post.data.title}</span>
             {post.data.excerpt && !compact ? <span class="excerpt">{post.data.excerpt}</span> : null}
           </span>
@@ -70,6 +73,18 @@ const { posts, compact = false } = Astro.props;
   .body {
     display: grid;
     gap: 0.15rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.75rem;
+    align-items: baseline;
+  }
+
+  .origin {
+    font-size: 0.9rem;
+    color: var(--slate);
   }
 
   .date {

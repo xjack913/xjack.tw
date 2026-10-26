@@ -16,8 +16,12 @@ const blog = defineCollection({
       cover: image().optional(),
       excerpt: z.string().optional(),
       tags: z.array(z.string()).default([]),
-      // 原文發表的地方（舊站、Medium…），新寫的留空
+      // 原文發表的地方（舊站、Medium、Blogger、運動筆記），新寫的留空
       origin: z.string().optional(),
+      // 原文網址；里程碑裡連到這個網址的，會自動改連站內這篇
+      originalUrl: z.string().optional(),
+      // 同一篇也發在其他地方（例如舊站文章的 Medium 版）
+      alsoAt: z.array(z.string()).default([]),
     }),
 });
 
