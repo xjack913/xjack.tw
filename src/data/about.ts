@@ -4,8 +4,8 @@ export const story = [
   {
     heading: '東華 GAMELab 出來的工程師',
     paragraphs: [
-      '我是出生在臺北的雲林人，去花蓮唸東華資工，在戴文凱教授的 GAMELab 研究電腦繪圖學，拿遊戲當應用。研究所時第一次幫鐵人隊教練徐國峰寫程式：一個環島募款的即時追蹤網站，17 天、1,017 公里。',
-      '2014 年，我從博士班休學去創業。',
+      '我是出生在臺北的雲林人，去花蓮唸東華資工，在戴文凱教授的 GAMELab 研究電腦繪圖學，拿遊戲當應用。「叉傑克」原本是我在線上遊戲裡的暱稱。',
+      '研究所時第一次幫鐵人隊教練徐國峰寫程式：一個環島募款的即時追蹤網站，17 天、1,017 公里。2013 年底，我們一起做了「跑力計算器」；2014 年，我從博士班休學去創業。',
     ],
   },
   {
@@ -52,4 +52,4 @@ export const beliefs = [
   },
 ];
 
-export const english = `XJack Hsu is the co-founder and CEO of RQ (RunningQuotient), a running analytics and training platform he started in 2016 with coaches Kuo-Feng Hsu and Lo U Ian. Trained in computer graphics at National Dong Hwa University's GAMELab, he turns watch data into training that runners can actually use. He also draws "Tong Dad's Diary", a comic about his daughter, and is running a public ten-year index-investing challenge.`;
+export const english = `XJack Hsu (Hung-Wei Hsu) is the co-founder and CEO of RQ (RunningQuotient), a running analytics and training platform he started in 2016 with coaches Kuo-Feng Hsu and Lo U Ian. Trained in computer graphics at National Dong Hwa University's GAMELab, he turns watch data into training that runners can actually use. He also draws "Tong Dad's Diary", a comic about his daughter, and is running a public ten-year index-investing challenge.`;

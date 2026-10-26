@@ -16,7 +16,12 @@ export const person = {
 export const links = {
   facebook: { label: 'Facebook 粉絲專頁', url: 'https://www.facebook.com/rqxjack' },
   instagram: { label: 'Instagram', url: 'https://www.instagram.com/rqxjack/' },
+  youtube: { label: 'YouTube', url: 'https://www.youtube.com/@rqxjack' },
   medium: { label: 'Medium', url: 'https://medium.com/@xjackhsu' },
+  linkedin: {
+    label: 'LinkedIn',
+    url: 'https://tw.linkedin.com/in/%E7%B4%98%E7%91%8B-%E8%A8%B1-2a075451',
+  },
   github: { label: 'GitHub', url: 'https://github.com/xjack913' },
   rq: { label: 'RQ 跑力', url: 'https://www.runningquotient.com/' },
 };
