@@ -87,4 +87,4 @@ XJack 的個性是樂觀、風趣、愛出去闖、二十年魔獸世界玩家�
 - 更新「最近在忙」：改 `src/data/now.ts`，順便改更新日期。
 - 新增作品：改 `src/data/projects.ts`。
 - 新寫文章：在 `src/content/blog/` 放一個 `.md`（frontmatter 要有 `title`、`date`、`slug`）。
-- 粉專最新貼文（首頁「世界頻道」）：部署流程每天 22:00 跑 `scripts/sync-fb-latest.mjs` 抓最新 3 篇，需要 repo Secret `FB_PAGE_TOKEN`；沒設或權杖過期時沿用 repo 裡的 `src/data/fb-latest.json`。本機手動更新：`FB_PAGE_TOKEN=... node scripts/sync-fb-latest.mjs` 後 commit。不用臉書官方嵌入，因為沒登入臉書的訪客只會看到空框（2026-10-27 實測）。
+- 粉專最新貼文（首頁「世界頻道」）：用快照，XJack 說不用每天自動更新（2026-10-27）。要更新時在本機跑 `FB_PAGE_TOKEN=... node scripts/sync-fb-latest.mjs`（或給 `FB_USER_TOKEN`），再 commit `src/data/fb-latest.json` 和 `public/fb-latest/`。部署流程也會跑這支，但 repo 沒設 Secret `FB_PAGE_TOKEN` 就直接沿用快照。不用臉書官方粉專外掛：沒登入臉書的訪客只看得到粉專名稱，貼文串是空的（2026-10-27 用內建瀏覽器和全新 Chrome 實測，連 Facebook 自己的粉專也一樣）。
