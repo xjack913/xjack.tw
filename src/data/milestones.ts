@@ -129,7 +129,7 @@ export const milestones: Milestone[] = [
     cat: 'media',
     title: '以電玩高手身分上公視《有話好說》',
     text: '「有話網講」單元〈打怪玩 Game 出頭天？〉請我當電玩高手來賓：八歲開始玩紅白機，RF、魔獸世界都當過「高玩」，聊從打電動到做遊戲。',
-    link: 'http://archive.talk.news.pts.org.tw/2012/03/pnn004game.html',
+    link: 'https://www.youtube.com/watch?v=A0zd3Ivd_V8',
     linkLabel: '看專訪',
   },
   {
