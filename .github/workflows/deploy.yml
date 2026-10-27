@@ -3,9 +3,6 @@ name: 部署到 GitHub Pages
 on:
   push:
     branches: [main]
-  schedule:
-    # 每天 22:00（台灣時間）重新建置一次，首頁「世界頻道」換上粉專最新貼文
-    - cron: '0 14 * * *'
   workflow_dispatch:
 
 permissions:
