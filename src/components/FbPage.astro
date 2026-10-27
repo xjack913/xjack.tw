@@ -1,44 +1,74 @@
 ---
-// 世界頻道的標題列：臉書官方粉專外掛，只放粉專標題（大頭貼、名稱、追蹤按鈕），XJack 2026-10-27 指定。
-// tabs 留空不放貼文串：沒登入臉書的訪客看不到外掛裡的貼文，貼文改由 FbFeed 自己做。
-// 外掛的寬度只在載入時決定（180–500），所以等量到容器寬度才放 src，手機上才不會被裁掉。
+// 世界頻道的標題列：粉專的大頭貼、名稱和「追蹤粉專」按鈕，網站自己做（XJack 2026-10-28 指定）。
+// 不用臉書官方粉專外掛：2026-10-28 試了 6 種參數，封面都載不出來、追蹤人數被按鈕列壓住，有沒有登入都一樣。
 import { links } from '../data/site';
 ---
 
-<div class="fb-page" data-href={links.facebook.url}>
-  <iframe title="叉傑克 XJack 的 Facebook 粉絲專頁" height="130" scrolling="no" loading="lazy" allow="encrypted-media"></iframe>
-  <noscript><a href={links.facebook.url} rel="noopener" target="_blank">{links.facebook.label}</a></noscript>
+<div class="fb-page">
+  <img src="/images/xjack-portrait.jpg" alt="" width="56" height="56" decoding="async" />
+  <div class="who">
+    <p class="name">叉傑克 XJack</p>
+    <p class="where">Facebook 粉絲專頁</p>
+  </div>
+  <a class="btn" href={links.facebook.url} rel="noopener" target="_blank">追蹤粉專</a>
 </div>
-
-<script is:inline>
-  document.querySelectorAll('.fb-page').forEach((box) => {
-    const frame = box.querySelector('iframe');
-    const width = Math.max(180, Math.min(500, Math.floor(box.clientWidth)));
-    const params = new URLSearchParams({
-      href: box.dataset.href,
-      tabs: '',
-      width: String(width),
-      height: '130',
-      small_header: 'false',
-      adapt_container_width: 'true',
-      hide_cover: 'false',
-      show_facepile: 'false',
-    });
-    frame.width = String(width);
-    frame.src = `https://www.facebook.com/plugins/page.php?${params}`;
-  });
-</script>
 
 <style>
   .fb-page {
-    width: min(100%, 500px);
-    min-height: 130px;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    width: min(100%, 30rem);
+    padding: 0.75rem 1rem;
+    background: var(--paper);
+    border: var(--frame);
+    border-radius: 12px;
   }
 
-  iframe {
-    display: block;
-    max-width: 100%;
-    border: 0;
-    overflow: hidden;
+  img {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--navy);
+    object-fit: cover;
+  }
+
+  .who {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .who p {
+    margin: 0;
+  }
+
+  .name {
+    font-family: var(--font-head);
+    font-weight: 900;
+    font-size: var(--step-1);
+    line-height: 1.3;
+    color: var(--navy);
+  }
+
+  .where {
+    font-size: var(--step--1);
+    color: var(--slate);
+  }
+
+  .btn {
+    flex: none;
+  }
+
+  /* 手機上名字和按鈕擠一排會斷行，按鈕改放第二行、整排寬 */
+  @media (max-width: 480px) {
+    .fb-page {
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1 1 100%;
+      justify-content: center;
+    }
   }
 </style>
