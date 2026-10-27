@@ -563,7 +563,7 @@ export const milestones: Milestone[] = [
     date: '2023-03-30',
     cat: 'media',
     title: 'Podcast《TriYang》專訪',
-    text: '#116〈Running Quotient RQ CEO - XJack aka 許紘瑋〉，主持人楊志祥。',
+    text: '#116 專訪，主持人楊志祥。',
     link: 'https://open.firstory.me/story/clfucxzz001y201uq48p7hp2z',
     linkLabel: '聽節目',
   },

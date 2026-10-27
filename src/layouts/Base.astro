@@ -10,6 +10,8 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   published?: string;
+  /** 只有關於我頁面會帶本名 */
+  fullIdentity?: boolean;
 }
 
 const {
@@ -18,9 +20,10 @@ const {
   image = '/og.jpg',
   type = 'website',
   published,
+  fullIdentity = false,
 } = Astro.props;
 
-const siteTitle = `${person.name} ${person.nameEn}｜${person.realName}`;
+const siteTitle = `${person.name} ${person.nameEn}`;
 const fullTitle = title ? `${title}｜${person.name} ${person.nameEn}` : siteTitle;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // 驗收用的子網域不讓搜尋引擎收錄，正式網域才開放
@@ -30,8 +33,8 @@ const ogImage = new URL(image, Astro.site);
 const personLd = {
   '@context': 'https://schema.org',
   '@type': 'Person',
-  name: person.realName,
-  alternateName: [person.name, person.nameEn, person.realNameEn],
+  name: siteTitle,
+  alternateName: fullIdentity ? [person.realName, person.realNameEn, 'XJack Hsu'] : [person.nameEn, 'XJack Hsu'],
   url: Astro.site?.href,
   image: new URL('/images/xjack-portrait.jpg', Astro.site).href,
   jobTitle: 'RQ 跑力共同創辦人暨執行長',
