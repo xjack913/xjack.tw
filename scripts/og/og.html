@@ -2,34 +2,44 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=LXGW+WenKai+TC:wght@700&family=Noto+Sans+TC:wght@500;700&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+TC:wght@500;700;900&display=block">
 <style>
-  /* 分享預覽圖 1200×630：npm run og 用 headless Chrome 截圖成 public/og.jpg */
-  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #fff; }
+  /* 分享預覽圖 1200×630（角色卡）：npm run og 用 headless Chrome 截圖成 public/og.jpg */
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #f3f6fa; }
   body { font-family: 'Noto Sans TC', sans-serif; color: #14263f; position: relative; }
-  .left { position: absolute; left: 72px; top: 92px; width: 640px; }
-  .who { font-size: 34px; font-weight: 700; color: #1e3a5f; display: flex; gap: 18px; align-items: baseline; }
-  .who .hand { font-family: 'LXGW WenKai TC'; font-size: 44px; }
-  .who .en { font-family: 'Barlow Condensed'; font-size: 44px; }
-  .who .real { font-size: 26px; color: #3b4d63; font-weight: 500; }
-  h1 { font-family: 'LXGW WenKai TC'; font-weight: 700; font-size: 92px; line-height: 1.18; margin: 34px 0 30px; color: #1e3a5f; }
-  .roles { font-size: 26px; font-weight: 500; color: #3b4d63; line-height: 1.6; }
-  .photo { position: absolute; right: 86px; top: 70px; width: 380px; height: 380px; }
-  .photo::before { content: ''; position: absolute; inset: 22px -22px -22px 22px; background: #1e3a5f; border-radius: 10px; }
-  .photo img { position: relative; width: 100%; height: 100%; border-radius: 10px; object-fit: cover; }
-  .foot { position: absolute; left: 72px; right: 72px; bottom: 44px; display: flex; justify-content: space-between; align-items: center; font-size: 24px; font-weight: 700; color: #1e3a5f; }
-  .foot .url { font-family: 'Barlow Condensed'; font-size: 34px; letter-spacing: .02em; }
-  .bar { position: absolute; left: 72px; bottom: 100px; width: 300px; height: 8px; border-radius: 4px; background: #ff6b35; }
+  .card { position: absolute; inset: 44px 56px 56px 44px; background: #fff; border: 4px solid #1e3a5f; border-radius: 22px; box-shadow: 10px 10px 0 #1e3a5f; }
+  .photo { position: absolute; left: 44px; top: 44px; width: 330px; height: 330px; }
+  .photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; border: 4px solid #1e3a5f; box-sizing: border-box; }
+  .lv { position: absolute; right: -16px; bottom: -18px; background: #ff6b35; border: 4px solid #1e3a5f; border-radius: 999px; padding: 2px 18px; font-family: 'Barlow Condensed'; font-weight: 700; font-size: 38px; line-height: 1.3; }
+  .info { position: absolute; left: 420px; top: 46px; right: 40px; }
+  .title { display: inline-block; background: #ffe3d6; color: #8c3410; font-weight: 700; font-size: 24px; padding: 2px 14px; border-radius: 8px; }
+  h1 { margin: 14px 0 18px; font-weight: 900; font-size: 92px; line-height: 1; color: #1e3a5f; display: flex; align-items: baseline; gap: 20px; }
+  h1 .en { font-family: 'Barlow Condensed'; font-weight: 700; font-size: 96px; }
+  .classes { display: flex; gap: 12px; flex-wrap: wrap; }
+  .classes span { border: 3px solid #1e3a5f; border-radius: 10px; padding: 2px 14px; font-weight: 700; font-size: 26px; color: #1e3a5f; }
+  .classes b { font-weight: 500; color: #3b4d63; font-size: 20px; margin-right: 6px; }
+  .xp { margin-top: 30px; }
+  .xp-head { display: flex; justify-content: space-between; font-weight: 700; font-size: 22px; }
+  .bar { margin-top: 8px; height: 22px; border: 3px solid #1e3a5f; border-radius: 999px; background: #f3f6fa; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 62%; background: #ff6b35; }
+  .foot { position: absolute; left: 44px; right: 40px; bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+  .url { display: flex; align-items: center; gap: 12px; font-family: 'Barlow Condensed'; font-weight: 700; font-size: 38px; color: #1e3a5f; }
+  .tag { font-weight: 700; font-size: 24px; color: #1e3a5f; }
 </style>
 </head>
 <body>
-  <div class="left">
-    <div class="who"><span class="hand">叉傑克</span><span class="en">XJack</span></div>
-    <h1>生命的每一秒<br>都有意義。</h1>
-    <div class="roles">RQ 跑力共同創辦人暨執行長<br>桐桐的爸爸、大盤市值仔、遊戲玩家</div>
+  <div class="card">
+    <div class="photo"><img src="../../public/images/xjack-portrait.jpg" alt=""><span class="lv">Lv.40+</span></div>
+    <div class="info">
+      <span class="title">稱號：不跑步也能聊數據</span>
+      <h1>叉傑克 <span class="en">XJack</span></h1>
+      <div class="classes"><span><b>主職</b>創業者</span><span><b>副職</b>桐爸</span><span><b>興趣</b>跑者</span><span><b>本命</b>魔獸玩家</span></div>
+      <div class="xp"><div class="xp-head"><span>RQ 跑力 第 11 年</span><span>冒險進行中</span></div><div class="bar"><i></i></div></div>
+    </div>
+    <div class="foot">
+      <span class="url"><svg width="46" height="46" viewBox="0 0 100 100"><g fill="#1e3a5f"><polygon points="6,6 30,6 94,94 70,94"/><polygon points="11.5,94 20.5,94 32.1,79 23.1,79"/><polygon points="26,73 38.5,73 50.1,58 37.6,58"/><polygon points="48.2,42 64.2,42 75.8,27 59.8,27"/></g><polygon points="62.4,21 82.4,21 94,6 74,6" fill="#ff6b35"/></svg>xjack.tw</span>
+      <span class="tag">#叉傑克 XJack</span>
+    </div>
   </div>
-  <div class="photo"><img src="../../public/images/xjack-portrait.jpg" alt=""></div>
-  <div class="bar"></div>
-  <div class="foot"><span class="url">xjack.tw</span><span>#叉傑克 XJack</span></div>
 </body>
 </html>

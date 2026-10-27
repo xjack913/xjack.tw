@@ -1,0 +1,37 @@
+---
+// 成就分類小圖示（24×24 線條圖）
+import type { MilestoneCategory } from '../data/milestones';
+
+interface Props {
+  cat: MilestoneCategory;
+  size?: number;
+}
+const { cat, size = 26 } = Astro.props;
+
+const paths: Record<MilestoneCategory, string> = {
+  rq: 'M13 2 4 14h7l-1 8 9-12h-7z',
+  study: 'M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5',
+  running: 'M10 2h4M12 8v5l3 2M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16z',
+  family: 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z',
+  investing: 'M4 20h16M6 16l4-4 3 3 6-7M15 8h4v4',
+  creative: 'M4 20l4-1L19 8l-3-3L5 16zM14 7l3 3',
+  fanpage: 'M4 10v4h3l7 4V6l-7 4zM18 9a3 3 0 0 1 0 6',
+  media: 'M12 3a3 3 0 0 1 3 3v5a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3zM6 11a6 6 0 0 0 12 0M12 17v4',
+  life: 'M12 3l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.7 1.1-5.9-4.4-4.1 6-.8z',
+};
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path d={paths[cat]}></path>
+</svg>

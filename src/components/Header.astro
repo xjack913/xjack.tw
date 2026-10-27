@@ -9,7 +9,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
 <header class="site-header">
   <div class="wrap bar">
     <a class="brand" href="/" aria-label={`${person.name} ${person.nameEn} 首頁`}>
-      <Mark size={30} />
+      <Mark size={34} />
       <span class="brand-name">{person.name}</span>
       <span class="brand-en num">{person.nameEn}</span>
     </a>
@@ -31,7 +31,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
 
 <style>
   .site-header {
-    border-bottom: 1px solid var(--rule);
+    border-bottom: 3px solid var(--navy);
     background: var(--paper);
   }
 
@@ -41,33 +41,34 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     align-items: center;
     justify-content: space-between;
     gap: 0.25rem 1.5rem;
-    padding-block: 0.9rem;
+    padding-block: 0.8rem;
   }
 
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
+    gap: 0.6rem;
     text-decoration: none;
     color: var(--navy);
   }
 
   .brand-name {
-    font-family: var(--font-hand);
-    font-weight: 700;
-    font-size: 1.5rem;
+    font-family: var(--font-head);
+    font-weight: 900;
+    font-size: 1.45rem;
     line-height: 1;
   }
 
   .brand-en {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: var(--slate);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--navy);
   }
 
   ul {
     display: flex;
-    gap: 0.25rem 1.4rem;
+    gap: 0.25rem 0.5rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -75,26 +76,28 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
 
   nav a {
     display: inline-block;
-    padding: 0.35rem 0;
+    padding: 0.3rem 0.75rem;
+    border-radius: 8px;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 700;
     color: var(--ink);
-    border-bottom: 3px solid transparent;
+    border: 2px solid transparent;
   }
 
   nav a:hover {
     color: var(--navy);
-    border-bottom-color: var(--rule);
+    border-color: var(--rule);
   }
 
   nav a[aria-current='page'] {
     color: var(--navy);
-    border-bottom-color: var(--orange);
+    background: var(--orange-soft);
+    border-color: var(--navy);
   }
 
-  @media (max-width: 560px) {
+  @media (max-width: 600px) {
     .bar {
-      padding-block: 0.75rem 0.25rem;
+      padding-block: 0.7rem 0.5rem;
     }
 
     nav {
@@ -104,6 +107,10 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     ul {
       justify-content: space-between;
       gap: 0;
+    }
+
+    nav a {
+      padding: 0.3rem 0.55rem;
     }
   }
 </style>

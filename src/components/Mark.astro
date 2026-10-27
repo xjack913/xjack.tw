@@ -1,13 +1,30 @@
 ---
-// 「叉」字標誌：兩條交叉的路線，一條海軍藍、一條活力橘
+// 叉傑克 XJack 標誌「分段 X」（C1 上升分段）：
+// 一筆完整的粗筆，另一筆從左下往右上切成四段、一段比一段粗，像越跑越強的長條圖；最高那段是傳說橘。
 interface Props {
   size?: number;
+  /** navy：淺底用；white：深底用 */
+  tone?: 'navy' | 'white';
+  title?: string;
 }
-const { size = 32 } = Astro.props;
+const { size = 32, tone = 'navy', title } = Astro.props;
+const main = tone === 'white' ? '#ffffff' : '#1e3a5f';
 ---
 
-<svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-  <rect width="32" height="32" rx="7" fill="#1e3a5f"></rect>
-  <path d="M9 9 L23 23" stroke="#ffffff" stroke-width="4.2" stroke-linecap="round"></path>
-  <path d="M23 9 L9 23" stroke="#ff6b35" stroke-width="4.2" stroke-linecap="round"></path>
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 100 100"
+  role={title ? 'img' : undefined}
+  aria-hidden={title ? undefined : 'true'}
+  focusable="false"
+>
+  {title && <title>{title}</title>}
+  <g fill={main}>
+    <polygon points="6,6 30,6 94,94 70,94"></polygon>
+    <polygon points="11.5,94 20.5,94 32.1,79 23.1,79"></polygon>
+    <polygon points="26,73 38.5,73 50.1,58 37.6,58"></polygon>
+    <polygon points="48.2,42 64.2,42 75.8,27 59.8,27"></polygon>
+  </g>
+  <polygon points="62.4,21 82.4,21 94,6 74,6" fill="#ff6b35"></polygon>
 </svg>

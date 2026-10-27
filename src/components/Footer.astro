@@ -1,5 +1,6 @@
 ---
 import { links, person } from '../data/site';
+import Mark from './Mark.astro';
 
 const year = new Date().getFullYear();
 const list = [links.facebook, links.instagram, links.youtube, links.medium, links.github, links.rq];
@@ -7,9 +8,12 @@ const list = [links.facebook, links.instagram, links.youtube, links.medium, link
 
 <footer class="site-footer">
   <div class="wrap grid">
-    <div>
-      <p class="motto">{person.belief}</p>
-      <p class="muted small">© {year} {person.name} {person.nameEn}</p>
+    <div class="sign">
+      <Mark size={44} tone="white" />
+      <div>
+        <p class="motto">{person.belief}</p>
+        <p class="small">© {year} {person.name} {person.nameEn}。存檔完成，下次見。</p>
+      </div>
     </div>
     <nav aria-label="社群連結">
       <ul>
@@ -30,8 +34,8 @@ const list = [links.facebook, links.instagram, links.youtube, links.medium, link
 
 <style>
   .site-footer {
-    border-top: 4px solid var(--navy);
-    background: var(--mist);
+    background: var(--ink);
+    color: #e6ecf3;
     padding-block: 2.5rem 2rem;
     margin-top: 2rem;
   }
@@ -43,16 +47,25 @@ const list = [links.facebook, links.instagram, links.youtube, links.medium, link
     gap: 1.5rem 3rem;
   }
 
+  .sign {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
   .motto {
-    font-family: var(--font-hand);
+    font-family: var(--font-head);
+    font-weight: 700;
     font-size: var(--step-1);
-    color: var(--navy);
+    color: #ffffff;
     margin-bottom: 0.4rem;
+    line-height: 1.5;
   }
 
   .small {
     font-size: var(--step--1);
     margin: 0;
+    color: #c9d3e0;
   }
 
   ul {
@@ -63,5 +76,14 @@ const list = [links.facebook, links.instagram, links.youtube, links.medium, link
     flex-wrap: wrap;
     gap: 0.4rem 1.4rem;
     max-width: 30rem;
+  }
+
+  a {
+    color: #ffffff;
+    text-decoration-color: var(--orange);
+  }
+
+  a:hover {
+    color: #ffd0bc;
   }
 </style>

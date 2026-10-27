@@ -30,6 +30,17 @@ export function byYear() {
   return map;
 }
 
+/** 成就點數：一般 10 點，重要時刻 50 點（純好玩的遊戲規則） */
+export const pointsOf = (m: Milestone) => (m.major ? 50 : 10);
+
+export function achievementStats() {
+  return {
+    count: milestones.length,
+    points: milestones.reduce((n, m) => n + pointsOf(m), 0),
+    majors: milestones.filter((m) => m.major).length,
+  };
+}
+
 /** 日期顯示：2016.03.15／2016.03／2016 */
 export const formatMilestoneDate = (date: string) => date.replaceAll('-', '.');
 
@@ -51,7 +62,7 @@ export function laps() {
           label: `~${LAP_START - 1}`,
           count: before.length,
           majors: before.filter((m) => m.major).length,
-          headline: { title: '東華求學與 GAMELab', short: '東華求學' } as Pick<Milestone, 'title' | 'short'>,
+          headline: { title: '新手村：東華資工與 GAMELab', short: '新手村：東華' } as Pick<Milestone, 'title' | 'short'>,
         },
       ]
     : [];
