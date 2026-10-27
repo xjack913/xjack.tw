@@ -133,7 +133,7 @@ export const media: MediaItem[] = [
     kind: '專訪',
     title: '有話網講 004〈打怪玩 Game 出頭天？〉',
     outlet: '公視《有話好說》',
-    url: 'http://archive.talk.news.pts.org.tw/2012/03/pnn004game.html',
+    url: 'https://www.youtube.com/watch?v=A0zd3Ivd_V8',
   },
   {
     date: '2010-10-15',
