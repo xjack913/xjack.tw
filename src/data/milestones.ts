@@ -28,6 +28,8 @@ export interface Milestone {
 }
 
 const fb = (id: string) => `https://www.facebook.com/1468991118575441/posts/${id}`;
+// 個人臉書：公開的貼文才放連結；只給朋友看的沒登入打不開，出處寫在註解
+const me = (path: string) => `https://www.facebook.com/HungWeiXJackHsu/${path}`;
 const RQ_6_YEARS = '/blog/1310/'; // 〈RQ 陪伴跑者們一起成長 6 年了！〉
 
 export const milestones: Milestone[] = [
@@ -492,6 +494,13 @@ export const milestones: Milestone[] = [
     linkLabel: '讀文章',
   },
   {
+    // 個人臉書 2021-12-12（只給朋友看）
+    date: '2021-12-12',
+    cat: 'family',
+    title: '一家三口去六福村',
+    text: '剛交往時說好要去六福村約會，九年後帶著一歲四個月的桐桐一起去，說到做到。',
+  },
+  {
     date: '2021-12-13',
     cat: 'media',
     title: 'Podcast《大黑看天下》',
@@ -518,12 +527,27 @@ export const milestones: Milestone[] = [
     linkLabel: '讀文章',
   },
   {
+    date: '2022-05-15',
+    cat: 'family',
+    title: '三桐樂團成立',
+    text: '交往十週年這天，三代同堂組了「三桐樂團」：桐桐主唱兼烏克麗麗、桐嬤月琴、我吉他、桐媽打鼓。之後逢年過節就出一首，端午唱〈大象〉、春節唱〈恭喜恭喜〉。',
+    link: me('videos/1037234040231568/'),
+    linkLabel: '看影片',
+  },
+  {
     date: '2022-07-14',
     cat: 'rq',
     title: '四方合作的功率馬拉松訓練營',
     text: '全台首創 STRYD、羅譽寅教練、RQ、COROS 四方合作的功率馬拉松訓練營。',
     link: 'https://www.runningquotient.com/video/t?id=501',
     linkLabel: '看說明會',
+  },
+  {
+    // 個人臉書 2022-08-31（只給朋友看）；2024-07-07 那篇也寫「剛滿 2 歲開始就上公立幼稚園」
+    date: '2022-08',
+    cat: 'family',
+    title: '桐桐上幼幼班',
+    text: '桐桐剛滿兩歲就上幼幼班，全家直接變成早睡早起的晨型人。',
   },
   {
     date: '2022-12-01',
@@ -576,6 +600,30 @@ export const milestones: Milestone[] = [
     linkLabel: '看貼文',
   },
   {
+    date: '2023-08-27',
+    cat: 'family',
+    title: '桐桐第一次上台表演',
+    text: '「我想要跟阿嬤一樣上台表演。」暑假回阿嬤家住兩個月，常常跟著阿嬤去舞蹈社練舞，開學前真的上台伴舞〈愛你一萬年〉。',
+    link: me('videos/1701766963657915/'),
+    linkLabel: '看影片',
+  },
+  {
+    date: '2024-07-07',
+    cat: 'family',
+    title: '公開桐桐四年的總支出',
+    text: '我有 100% 記帳的習慣，桐桐 4 歲生日這天把四年的帳攤開：總支出 28 萬 6,083 元，平均每月 5,960 元，比當年預估的 7,900 元還省。',
+    link: me('posts/pfbid09wdFBB9TYoZkLaDAxZQNL2jGDiDfo1jV81tLS2ei5jH5dCDp8St34PAPK325HeoGl'),
+    linkLabel: '看貼文',
+  },
+  {
+    date: '2024-09-13',
+    cat: 'life',
+    title: '滿 40 歲',
+    text: '「或許真的不惑了。」理髮廳阿姨不再叫我弟弟，還好早餐店阿姨還是叫我帥哥。',
+    link: me('posts/pfbid0YJ4NT3c4Dng27msSvnbQmfPHbjqXRLM1tX4NmwySkXB3mH2Wooz8BML6prA1xh7Tl'),
+    linkLabel: '看貼文',
+  },
+  {
     date: '2024-12',
     cat: 'investing',
     title: '勞退自提改投指數',
@@ -604,6 +652,13 @@ export const milestones: Milestone[] = [
     linkLabel: '看新聞',
   },
   {
+    // 個人臉書 2025-03-08（只給朋友看）
+    date: '2025-03-08',
+    cat: 'family',
+    title: '桐桐第一次路跑 6K 完賽',
+    text: '帶全家回花蓮跑桐桐人生第一場路跑，特地挑當年 2014 東海岸馬拉松的路線，那也是 RQ 創業的起點。',
+  },
+  {
     date: '2025-03-15',
     cat: 'rq',
     title: 'RQ 九週年',
@@ -626,6 +681,15 @@ export const milestones: Milestone[] = [
     text: '分享「如何用 RQ 進行馬拉松科學化訓練」，和跑者面對面討論實戰問題。整理稿是目前最完整的創業自述。',
     link: 'https://www.runningquotient.com/article/single/291',
     linkLabel: '讀整理稿',
+  },
+  {
+    // 黑包那段出自個人臉書 2025-05-18 的貼文
+    date: '2025-05-09',
+    cat: 'family',
+    title: '全家飛大阪',
+    text: '在難波獨自帶桐桐逛街，收她的玩具時把用了九年的 UA 大黑包拉鍊整個扯壞，只好當場在日本買新包。',
+    link: me('posts/pfbid09EzxD22Q2wSjsPSinu3f5USSaZHmLuQCdeRgnFJBgsNe2wTUVgaWyeB5CgwSSZGRl'),
+    linkLabel: '看貼文',
   },
   {
     date: '2025-07-16',
