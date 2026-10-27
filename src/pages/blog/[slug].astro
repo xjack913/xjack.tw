@@ -1,4 +1,5 @@
 ---
+import { getImage } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { formatDate, getPosts, postSlug, postUrl, type Post } from '../../lib/blog';
@@ -20,7 +21,9 @@ interface Props {
 const { post, newer, older } = Astro.props;
 const { Content } = await render(post);
 const iso = post.data.date.toISOString().slice(0, 10);
-const ogImage = post.data.cover?.src;
+// 分享圖另外轉一張 JPG：直接用封面原檔的話，封面若只在內文被轉成 WebP，原始 JPG 不會輸出，FB／LINE 抓到的是 404
+const cover = post.data.cover;
+const ogImage = cover ? (await getImage({ src: cover, width: Math.min(1200, cover.width), format: 'jpg' })).src : undefined;
 ---
 
 <Base title={post.data.title} description={post.data.excerpt} type="article" published={iso} image={ogImage}>

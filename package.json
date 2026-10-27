@@ -6,7 +6,7 @@
   "description": "叉傑克 XJack（許紘瑋）個人網站",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/check-og.mjs",
     "preview": "astro preview",
     "og": "node scripts/og/render.mjs"
   },

@@ -31,6 +31,6 @@ npm run dev
 
 ## 文章搬家
 
-`src/content/blog/` 依來源分資料夾：`xjack`（舊站 xjack.tw）、`blogger`（叉傑克-進化科學跑者之路）、`medium`、`biji`（運動筆記），共 52 篇，內容一字未改，圖片也一起搬過來；桐桐的真實正臉照片不放（隱私規則見 [docs/PLAN.md](docs/PLAN.md)）。重新匯入用 `node scripts/import-legacy-blog.mjs <來源> <備份資料夾>`。
+`src/content/blog/` 依來源分資料夾：`xjack`（舊站 xjack.tw）、`blogger`（叉傑克-進化科學跑者之路）、`medium`、`biji`（運動筆記），共 52 篇，保留當年的文字與語氣，圖片也一起搬過來（部分照片與連結因隱私和搬家調整過）；桐桐的真實正臉照片不放（隱私規則見 [docs/PLAN.md](docs/PLAN.md)）。重新匯入用 `node scripts/import-legacy-blog.mjs <來源> <備份資料夾>`。
 
 舊站文章用原站編號當網址：`https://xjack.tw/w/bd/1310` 會轉到 `/blog/1310/`。

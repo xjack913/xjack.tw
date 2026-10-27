@@ -33,7 +33,7 @@ export const projects: Project[] = [
     status: '進行中',
     quality: 'legendary',
     summary: '幫跑者把手錶數據翻譯成看得懂的訓練：跑力、課表、訓練負荷，十幾萬跑者用過。現在還有「徐國峰 × AI」AI 教練陪你練。',
-    flavor: '十年前只是想幫國峰寫個程式算跑力，沒想到寫成一家公司。',
+    flavor: '當年只是想幫國峰寫個程式算跑力，沒想到寫成一家公司。',
     url: 'https://www.runningquotient.com/',
     urlLabel: '前往 RQ 跑力',
     featured: true,
