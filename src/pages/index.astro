@@ -2,11 +2,11 @@
 import Base from '../layouts/Base.astro';
 import CharacterCard from '../components/CharacterCard.astro';
 import FbFeed from '../components/FbFeed.astro';
+import FbPage from '../components/FbPage.astro';
 import LapChart from '../components/LapChart.astro';
 import PostList from '../components/PostList.astro';
 import ProjectRow from '../components/ProjectRow.astro';
 import { links, person } from '../data/site';
-import fbFeed from '../data/fb-latest.json';
 import { now, nowUpdated } from '../data/now';
 import { projects } from '../data/projects';
 import { getPosts } from '../lib/blog';
@@ -67,14 +67,9 @@ const ach = achievementStats();
 
   <section class="section">
     <div class="wrap">
-      <div class="section-head">
-        <div>
-          <h2>世界頻道</h2>
-          <p>
-            Facebook 粉專「{fbFeed.page.name}」最近的貼文，<b class="num">{fbFeed.page.followers.toLocaleString('en-US')}</b> 人在追蹤。
-          </p>
-        </div>
-        <a class="more" href={links.facebook.url} rel="noopener" target="_blank">追蹤粉專</a>
+      <div class="section-head channel-head">
+        <h2>世界頻道</h2>
+        <FbPage />
       </div>
       <FbFeed />
     </div>
@@ -194,6 +189,10 @@ const ach = achievementStats();
     border-radius: 50%;
     background: var(--orange);
     box-shadow: 0 0 0 3px var(--orange-soft);
+  }
+
+  .channel-head {
+    align-items: center;
   }
 
   .items {
