@@ -12,7 +12,7 @@ if (!source || !src) throw new Error('用法：node scripts/import-legacy-blog.m
 const dest = path.resolve('src/content/blog', source);
 
 const origins = {
-  xjack: '叉傑克不跑步聊數據',
+  xjack: 'xjack.tw 舊站',
   medium: 'Medium',
   blogger: '叉傑克-進化科學跑者之路',
   biji: '運動筆記',

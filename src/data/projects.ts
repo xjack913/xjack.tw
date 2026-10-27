@@ -94,7 +94,7 @@ export const projects: Project[] = [
     status: '已完成',
     quality: 'rare',
     summary:
-      'Blogger「叉傑克-進化科學跑者之路」、Medium、舊站「叉傑克不跑步聊數據」和運動筆記，寫訓練日誌、比賽心得、馬拉松數據和創業。52 篇全部搬進「冒險日誌」。',
+      'Blogger「叉傑克-進化科學跑者之路」、Medium、舊站 xjack.tw 和運動筆記，寫訓練日誌、比賽心得、馬拉松數據和創業。52 篇全部搬進「冒險日誌」。',
     flavor: '從肥宅進化成跑者的完整攻略。',
     url: '/blog/',
     urlLabel: '讀冒險日誌',
