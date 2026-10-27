@@ -1,102 +1,97 @@
 ---
 import Base from '../layouts/Base.astro';
+import CharacterCard from '../components/CharacterCard.astro';
 import LapChart from '../components/LapChart.astro';
 import PostList from '../components/PostList.astro';
 import ProjectRow from '../components/ProjectRow.astro';
-import { person, links } from '../data/site';
+import { links, person } from '../data/site';
 import { now, nowUpdated } from '../data/now';
 import { projects } from '../data/projects';
 import { getPosts } from '../lib/blog';
+import { achievementStats } from '../lib/milestones';
 
-const posts = (await getPosts()).slice(0, 4);
+const allPosts = await getPosts();
+const posts = allPosts.slice(0, 4);
 const featured = projects.filter((p) => p.featured);
+const ach = achievementStats();
 ---
 
 <Base>
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div class="hero-text">
-        <p class="who">
-          <span class="hand">{person.name}</span>
-          <span class="num en">{person.nameEn}</span>
-        </p>
-        <h1>生命的每一秒<br />都有意義。</h1>
-        <p class="lede">{person.intro}</p>
-        <p class="actions">
-          <a class="btn" href="/about/">認識我</a>
-          <a class="btn ghost" href="/timeline/">看我的里程碑</a>
-        </p>
-      </div>
-      <div class="hero-photo">
-        <img
-          src="/images/xjack-portrait.jpg"
-          alt="叉傑克穿著 RQ 跑力黑色 T 恤、雙手抱胸的半身照"
-          width="960"
-          height="960"
-          fetchpriority="high"
-        />
-      </div>
+  <section class="hero band">
+    <div class="wrap">
+      <CharacterCard />
+      <p class="motto">{person.motto}</p>
     </div>
   </section>
 
-  <section class="section band">
+  <section class="section">
     <div class="wrap">
       <div class="section-head">
-        <h2>一年一圈的分段紀錄</h2>
-        <a class="more" href="/timeline/">全部里程碑</a>
+        <div>
+          <h2>每年解鎖的成就</h2>
+          <p>
+            目前解鎖 <b class="num big">{ach.count}</b> 個成就、累積 <b class="num big">{ach.points}</b> 點成就點數。
+          </p>
+        </div>
+        <a class="more" href="/timeline/">看全部成就</a>
       </div>
       <LapChart />
     </div>
   </section>
 
-  <section class="section">
-    <div class="wrap now-grid">
-      <div>
-        <h2>最近在忙</h2>
-        <p class="muted small">更新於 <span class="num">{nowUpdated}</span></p>
-      </div>
-      <dl class="now">
-        {
-          now.map((n) => (
-            <div class="now-item">
-              <dt>{n.label}</dt>
-              <dd set:html={n.text} />
-            </div>
-          ))
-        }
-      </dl>
-    </div>
-  </section>
-
   <section class="section band">
     <div class="wrap">
       <div class="section-head">
-        <h2>做過的東西</h2>
-        <a class="more" href="/projects/">全部作品</a>
+        <h2>任務日誌</h2>
+        <p class="small">更新於 <span class="num">{nowUpdated}</span></p>
       </div>
-      <div class="projects">
+      <ol class="quests">
+        {
+          now.map((q) => (
+            <li class="quest">
+              <p class="quest-kind">{q.kind}</p>
+              <h3>{q.label}</h3>
+              <p class="quest-text" set:html={q.text} />
+              <p class="quest-progress">
+                <span class="dot" aria-hidden="true" />
+                {q.progress}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>裝備欄</h2>
+        <a class="more" href="/projects/">看全部裝備</a>
+      </div>
+      <div class="items">
         {featured.map((p) => <ProjectRow project={p} compact />)}
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section band">
     <div class="wrap posts-grid">
       <div>
-        <h2>文章</h2>
-        <p class="muted">跑步數據、科學化訓練、創業和育兒。</p>
-        <p><a class="more" href="/blog/">全部文章</a></p>
+        <h2>冒險日誌</h2>
+        <p class="muted">訓練日誌、比賽心得、馬拉松數據、創業和育兒，十年寫了 {allPosts.length} 篇。</p>
+        <p><a class="more" href="/blog/">翻開日誌</a></p>
       </div>
       <PostList posts={posts} compact />
     </div>
   </section>
 
-  <section class="section contact band">
+  <section class="section contact">
     <div class="wrap read">
-      <h2>想找我聊聊？</h2>
+      <h2>有事密我</h2>
       <p>
-        演講、訪談、合作或單純想打聲招呼，最快的方式是私訊我的
-        <a href={links.facebook.url} rel="noopener" target="_blank">Facebook 粉絲專頁</a>。
+        想找我演講、訪談、合作，或只是想組隊聊天，直接私訊我的
+        <a href={links.facebook.url} rel="noopener" target="_blank">Facebook 粉絲專頁</a>，我會親自回。
       </p>
     </div>
   </section>
@@ -104,165 +99,89 @@ const featured = projects.filter((p) => p.featured);
 
 <style>
   .hero {
-    padding-block: clamp(2.5rem, 6vw, 5rem);
+    padding-block: clamp(2rem, 5vw, 4rem) clamp(2rem, 4vw, 3rem);
   }
 
-  .hero-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
-    gap: clamp(2rem, 5vw, 4.5rem);
-    align-items: center;
-  }
-
-  .who {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.25rem 0.75rem;
-    margin-bottom: 1.25rem;
-  }
-
-  .hand {
-    font-family: var(--font-hand);
+  .motto {
+    margin: 1.75rem 0 0;
+    text-align: center;
     font-weight: 700;
-    font-size: var(--step-2);
     color: var(--navy);
-  }
-
-  .en {
-    font-size: var(--step-2);
-    font-weight: 600;
-    color: var(--navy);
-  }
-
-  .real {
-    color: var(--slate);
-    font-size: var(--step-0);
-  }
-
-  h1 {
-    font-size: clamp(2.6rem, 1.4rem + 5.2vw, 5.25rem);
-    line-height: 1.18;
-    margin-bottom: 1.5rem;
-  }
-
-  .lede {
     font-size: var(--step-1);
-    line-height: 1.75;
-    max-width: 32rem;
   }
 
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 2rem;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    min-height: 48px;
-    padding: 0.4rem 1.4rem;
-    border-radius: 6px;
-    background: var(--navy);
-    color: #fff;
-    font-weight: 700;
-    text-decoration: none;
-    border: 2px solid var(--navy);
-  }
-
-  .btn:hover {
-    background: var(--ink);
-    color: #fff;
-  }
-
-  .btn.ghost {
-    background: transparent;
+  .big {
+    font-size: 1.5rem;
     color: var(--navy);
-  }
-
-  .btn.ghost:hover {
-    background: var(--mist);
-    color: var(--navy);
-  }
-
-  .hero-photo {
-    position: relative;
-    justify-self: end;
-    width: min(100%, 26rem);
-  }
-
-  /* 照片後面墊一塊海軍藍、底部一條橘線，像終點線 */
-  .hero-photo::before {
-    content: '';
-    position: absolute;
-    inset: 1.25rem -1.25rem -1.25rem 1.25rem;
-    background: var(--navy);
-    border-radius: 8px;
-  }
-
-  .hero-photo::after {
-    content: '';
-    position: absolute;
-    left: -1.25rem;
-    width: 55%;
-    bottom: -2.4rem;
-    height: 6px;
-    background: var(--orange);
-    border-radius: 3px;
-  }
-
-  .hero-photo img {
-    position: relative;
-    border-radius: 8px;
-    width: 100%;
-  }
-
-  .now-grid,
-  .posts-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 0.8fr) minmax(0, 2fr);
-    gap: 1.5rem 4rem;
   }
 
   .small {
     font-size: var(--step--1);
   }
 
-  .now {
+  .posts-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.7fr) minmax(0, 2fr);
+    gap: 1.5rem 4rem;
+  }
+
+  .quests {
+    list-style: none;
     margin: 0;
+    padding: 0;
     display: grid;
-    gap: 0;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 21rem), 1fr));
+    gap: 1rem;
   }
 
-  .now-item {
-    display: grid;
-    grid-template-columns: 9rem 1fr;
-    gap: 0.25rem 1.5rem;
-    padding: 1.1rem 0;
-    border-top: 1px solid var(--rule);
+  .quest {
+    background: var(--paper);
+    border: var(--frame);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
   }
 
-  .now-item:last-child {
-    border-bottom: 1px solid var(--rule);
-  }
-
-  dt {
-    font-family: var(--font-hand);
+  .quest-kind {
+    display: inline-block;
+    margin: 0 0 0.25rem;
+    padding: 0 0.6rem;
+    border-radius: 6px;
+    background: var(--orange-soft);
+    color: var(--ember);
     font-weight: 700;
-    font-size: var(--step-1);
-    color: var(--navy);
-    line-height: 1.5;
+    font-size: 0.95rem;
+    line-height: 1.7;
   }
 
-  dd {
+  .quest h3 {
+    margin-bottom: 0.25rem;
+  }
+
+  .quest-text {
+    margin-bottom: 0.4rem;
+  }
+
+  .quest-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin: 0;
+    font-weight: 700;
+    font-size: var(--step--1);
+    color: var(--navy);
   }
 
-  .projects {
+  .dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--orange);
+    box-shadow: 0 0 0 3px var(--orange-soft);
+  }
+
+  .items {
     display: grid;
-    gap: 2.5rem;
+    gap: 1.5rem;
   }
 
   .contact h2 {
@@ -270,25 +189,7 @@ const featured = projects.filter((p) => p.featured);
   }
 
   @media (max-width: 820px) {
-    .hero-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .hero-photo {
-      justify-self: start;
-      width: min(80%, 20rem);
-      order: -1;
-      margin-bottom: 2.5rem;
-    }
-
-    .now-grid,
     .posts-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  @media (max-width: 560px) {
-    .now-item {
       grid-template-columns: 1fr;
     }
   }

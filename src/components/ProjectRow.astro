@@ -1,5 +1,6 @@
 ---
-import type { Project } from '../data/projects';
+// 裝備卡：像魔獸世界的物品說明框（品質標籤、取得時間、說明、最底下一行小字）
+import { qualityLabel, type Project } from '../data/projects';
 
 interface Props {
   project: Project;
@@ -9,22 +10,30 @@ const { project: p, compact = false } = Astro.props;
 const external = p.url && !p.url.startsWith('/');
 ---
 
-<article class:list={['project', { compact, 'has-image': !!p.image }]} id={p.id}>
+<article class:list={['item', p.quality, { compact, 'has-image': !!p.image }]} id={p.id}>
   {
     p.image && (
-      <a class="shot" href={p.url} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined} tabindex="-1" aria-hidden="true">
+      <a
+        class="shot"
+        href={p.url}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noopener' : undefined}
+        tabindex="-1"
+        aria-hidden="true"
+      >
         <img src={p.image} alt={p.imageAlt ?? ''} loading="lazy" width="1200" height="630" />
       </a>
     )
   }
   <div class="text">
     <p class="meta">
+      <span class:list={['quality', p.quality]}>{qualityLabel[p.quality]}</span>
       <span class="num period">{p.period}</span>
       <span class="status">{p.status}</span>
     </p>
     <h3>{p.name}</h3>
-    <p>{p.summary}</p>
-    {!compact && p.body && <p class="body" set:html={p.body} />}
+    <p class="summary">{p.summary}</p>
+    {p.flavor && !compact && <p class="flavor">「{p.flavor}」</p>}
     {
       p.url && (
         <p class="go">
@@ -38,13 +47,30 @@ const external = p.url && !p.url.startsWith('/');
 </article>
 
 <style>
-  .project {
+  .item {
     display: grid;
-    gap: 1rem 2.5rem;
+    gap: 1rem 2rem;
+    background: var(--paper);
+    border: var(--frame);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    border-top-width: 8px;
   }
 
-  .project.has-image {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  .item.legendary {
+    border-top-color: var(--orange);
+  }
+
+  .item.epic {
+    border-top-color: #6d3fc0;
+  }
+
+  .item.rare {
+    border-top-color: #2f6fb8;
+  }
+
+  .item.has-image {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
     align-items: center;
   }
 
@@ -52,16 +78,17 @@ const external = p.url && !p.url.startsWith('/');
     width: 100%;
     aspect-ratio: 1200 / 630;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid var(--rule);
     background: var(--mist);
   }
 
   .meta {
     display: flex;
-    gap: 1rem;
-    align-items: baseline;
-    margin-bottom: 0.2rem;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.9rem;
+    align-items: center;
+    margin-bottom: 0.3rem;
   }
 
   .period {
@@ -73,19 +100,17 @@ const external = p.url && !p.url.startsWith('/');
   .status {
     font-size: var(--step--1);
     color: var(--slate);
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    padding: 0 0.7rem;
-    line-height: 1.7;
   }
 
   h3 {
     font-size: var(--step-2);
-    margin-bottom: 0.5rem;
+    font-weight: 900;
+    margin-bottom: 0.4rem;
   }
 
-  .body {
-    color: var(--slate);
+  .flavor {
+    color: var(--ember);
+    font-weight: 500;
   }
 
   .go {
@@ -93,13 +118,8 @@ const external = p.url && !p.url.startsWith('/');
     margin: 0;
   }
 
-  .project:not(.has-image) {
-    border-left: 4px solid var(--orange);
-    padding-left: 1.5rem;
-  }
-
   @media (max-width: 760px) {
-    .project.has-image {
+    .item.has-image {
       grid-template-columns: 1fr;
     }
   }

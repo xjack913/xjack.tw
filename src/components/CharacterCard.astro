@@ -1,0 +1,344 @@
+---
+// 首頁角色卡：頭像＋等級、稱號、職業、自評屬性、RQ 經驗值條。
+import { person } from '../data/site';
+
+// RQ 跑力 2016-03-15 創立：算第幾年、離下一個週年還有幾天（建置時先算一次，瀏覽器開啟時再更新）
+const FOUNDED = { y: 2016, m: 2, d: 15 };
+function rqYear(now = new Date()) {
+  const thisYear = new Date(now.getFullYear(), FOUNDED.m, FOUNDED.d);
+  const last = now >= thisYear ? thisYear : new Date(now.getFullYear() - 1, FOUNDED.m, FOUNDED.d);
+  const next = new Date(last.getFullYear() + 1, FOUNDED.m, FOUNDED.d);
+  const day = 86400000;
+  return {
+    nth: last.getFullYear() - FOUNDED.y + 1,
+    pct: Math.round(((now.getTime() - last.getTime()) / (next.getTime() - last.getTime())) * 100),
+    left: Math.ceil((next.getTime() - now.getTime()) / day),
+  };
+}
+const xp = rqYear();
+---
+
+<article class="card frame" aria-label="叉傑克的角色卡">
+  <div class="portrait">
+    <img
+      src="/images/xjack-portrait.jpg"
+      alt="叉傑克穿著 RQ 跑力黑色 T 恤、雙手抱胸的半身照"
+      width="960"
+      height="960"
+      fetchpriority="high"
+    />
+    <span class="level num">{person.level}</span>
+  </div>
+
+  <div class="info">
+    <p class="title">稱號：{person.title}</p>
+    <h1>
+      <span class="name">{person.name}</span>
+      <span class="name-en num">{person.nameEn}</span>
+    </h1>
+    <ul class="classes" aria-label="職業">
+      {
+        person.classes.map((c) => (
+          <li>
+            <span class="kind">{c.kind}</span>
+            {c.name}
+          </li>
+        ))
+      }
+    </ul>
+    <p class="hello">{person.hello}</p>
+
+    <div class="xp" data-xp>
+      <div class="xp-head">
+        <span>RQ 跑力 第 <b class="num" data-xp-nth>{xp.nth}</b> 年</span>
+        <span class="muted">離下一個週年還有 <b class="num" data-xp-left>{xp.left}</b> 天</span>
+      </div>
+      <div
+        class="xp-bar"
+        role="progressbar"
+        aria-label="RQ 跑力今年的經驗值"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow={xp.pct}
+        data-xp-bar
+      >
+        <span style={`--p:${xp.pct}%`}></span>
+      </div>
+    </div>
+
+    <p class="actions">
+      <a class="btn" href="/timeline/">看我的成就</a>
+      <a class="btn ghost" href="/about/">打開角色檔案</a>
+    </p>
+  </div>
+
+  <div class="stats">
+    <p class="stats-title">自評屬性 <span class="muted">（數字是我自己給的）</span></p>
+    <dl>
+      {
+        person.stats.map((s) => (
+          <div class="stat">
+            <dt>{s.name}</dt>
+            <dd>
+              <span class="meter" aria-hidden="true">
+                <span style={`--v:${s.value}%`} />
+              </span>
+              <span class="val num">{s.value}</span>
+              <span class="note">{s.note}</span>
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</article>
+
+<script>
+  // 瀏覽器開啟時再算一次 RQ 經驗值，網站沒重新建置也會是今天的數字
+  const box = document.querySelector<HTMLElement>('[data-xp]');
+  if (box) {
+    const now = new Date();
+    const thisYear = new Date(now.getFullYear(), 2, 15);
+    const last = now >= thisYear ? thisYear : new Date(now.getFullYear() - 1, 2, 15);
+    const next = new Date(last.getFullYear() + 1, 2, 15);
+    const pct = Math.round(((now.getTime() - last.getTime()) / (next.getTime() - last.getTime())) * 100);
+    box.querySelector('[data-xp-nth]')!.textContent = String(last.getFullYear() - 2016 + 1);
+    box.querySelector('[data-xp-left]')!.textContent = String(Math.ceil((next.getTime() - now.getTime()) / 86400000));
+    const bar = box.querySelector<HTMLElement>('[data-xp-bar]')!;
+    bar.setAttribute('aria-valuenow', String(pct));
+    bar.querySelector<HTMLElement>('span')!.style.setProperty('--p', `${pct}%`);
+  }
+</script>
+
+<style>
+  .card {
+    display: grid;
+    grid-template-columns: minmax(0, 17rem) minmax(0, 1fr);
+    grid-template-areas:
+      'portrait info'
+      'stats stats';
+    gap: 1.75rem 2.5rem;
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+  }
+
+  .portrait {
+    grid-area: portrait;
+    position: relative;
+    align-self: start;
+  }
+
+  .portrait img {
+    width: 100%;
+    border-radius: 10px;
+    border: var(--frame);
+  }
+
+  .level {
+    position: absolute;
+    right: -0.6rem;
+    bottom: -0.8rem;
+    background: var(--orange);
+    color: var(--ink);
+    border: var(--frame);
+    border-radius: 999px;
+    padding: 0.1rem 0.8rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .info {
+    grid-area: info;
+  }
+
+  .title {
+    display: inline-block;
+    margin: 0 0 0.6rem;
+    padding: 0.05rem 0.7rem;
+    border-radius: 6px;
+    background: var(--q-legendary-bg);
+    color: var(--q-legendary-fg);
+    font-weight: 700;
+    font-size: var(--step--1);
+  }
+
+  h1 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.8rem;
+    font-size: clamp(2.6rem, 1.6rem + 4vw, 4.5rem);
+    line-height: 1.1;
+    margin-bottom: 0.9rem;
+  }
+
+  .name-en {
+    font-weight: 700;
+  }
+
+  .classes {
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .classes li {
+    border: 2px solid var(--navy);
+    border-radius: 8px;
+    padding: 0 0.7rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.9;
+  }
+
+  .kind {
+    font-weight: 500;
+    color: var(--slate);
+    margin-right: 0.3rem;
+    font-size: 0.9em;
+  }
+
+  .hello {
+    font-size: var(--step-1);
+    line-height: 1.7;
+    max-width: 36rem;
+  }
+
+  .xp {
+    max-width: 36rem;
+    margin: 1.25rem 0 0;
+  }
+
+  .xp-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 1rem;
+    font-weight: 700;
+    font-size: var(--step--1);
+  }
+
+  .xp-head b {
+    font-size: 1.3rem;
+  }
+
+  .xp-bar {
+    height: 16px;
+    border: var(--frame);
+    border-radius: 999px;
+    background: var(--mist);
+    overflow: hidden;
+    margin-top: 0.3rem;
+  }
+
+  .xp-bar span {
+    display: block;
+    height: 100%;
+    width: var(--p);
+    background: var(--orange);
+    transform-origin: left;
+    animation: fill 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin: 1.75rem 0 0;
+  }
+
+  .stats {
+    grid-area: stats;
+    border-top: 2px dashed var(--rule);
+    padding-top: 1.25rem;
+  }
+
+  .stats-title {
+    font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+
+  .stats-title .muted {
+    font-weight: 400;
+    font-size: var(--step--1);
+  }
+
+  dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 0.6rem 2.5rem;
+  }
+
+  .stat {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    align-items: center;
+    gap: 0 0.75rem;
+  }
+
+  dt {
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  dd {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 2.2rem;
+    grid-template-areas: 'meter val' 'note note';
+    align-items: center;
+    gap: 0 0.5rem;
+  }
+
+  .meter {
+    grid-area: meter;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--mist);
+    border: 1.5px solid var(--navy);
+    overflow: hidden;
+  }
+
+  .meter span {
+    display: block;
+    height: 100%;
+    width: var(--v);
+    background: var(--navy);
+  }
+
+  .val {
+    grid-area: val;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: right;
+    color: var(--navy);
+  }
+
+  .note {
+    grid-area: note;
+    font-size: 0.95rem;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+
+  @keyframes fill {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .card {
+      grid-template-columns: 1fr;
+      grid-template-areas: 'portrait' 'info' 'stats';
+    }
+
+    .portrait {
+      width: min(70%, 15rem);
+    }
+  }
+</style>

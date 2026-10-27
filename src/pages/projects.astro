@@ -4,12 +4,14 @@ import ProjectRow from '../components/ProjectRow.astro';
 import { projects } from '../data/projects';
 ---
 
-<Base title="作品" description="叉傑克做過的東西：RQ 跑力、跟岳母的十年之約、桐桐貓貓島、桐爸日記與更多。">
+<Base title="裝備" description="叉傑克 XJack 做出來的東西：RQ 跑力、跟岳母的十年之約、桐桐貓貓島、桐爸日記與更多。">
   <section class="section">
     <div class="wrap">
       <header class="page-head read">
-        <h1>作品</h1>
-        <p class="muted">工作做的、陪家人做的、自己好玩做的，都放在這裡。</p>
+        <h1>裝備欄</h1>
+        <p class="muted">
+          這些是我一路打造出來、你現在就點得到的東西。有工作做的、陪家人做的，也有純粹自己好玩做的。品質是我自己評的，傳說級只有一件。
+        </p>
       </header>
       <div class="list">
         {projects.map((p) => <ProjectRow project={p} />)}
@@ -20,7 +22,7 @@ import { projects } from '../data/projects';
 
 <style>
   .page-head {
-    margin-bottom: 3rem;
+    margin-bottom: 2.5rem;
   }
 
   .page-head h1 {
@@ -29,6 +31,6 @@ import { projects } from '../data/projects';
 
   .list {
     display: grid;
-    gap: 3.5rem;
+    gap: 1.75rem;
   }
 </style>

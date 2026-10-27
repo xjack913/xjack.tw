@@ -1,12 +1,14 @@
-/* 叉傑克 XJack 個人網站
-   淺底深字、內文 18px、文字對比一律 ≥ 7:1（長輩也會看）。
-   品牌色：海軍藍 #1E3A5F ＋ 活力橘 #FF6B35；橘色對白底只有 2.8:1，只拿來畫圖形（點、線、條），不當文字色。
-   字體分工：標題用霞鶩文楷（像手寫日記，有人味）、內文用思源黑體、年份與數字用 Barlow Condensed（像比賽計時器）。 */
+/* 叉傑克 XJack 個人網站：冒險者檔案
+   整站像一份遊戲角色檔案：首頁是角色卡、里程碑是成就、作品是裝備、文章是冒險日誌。
+   淺底深字、內文 18px、文字對比 ≥ 7:1（長輩也會看）。
+   品牌色：海軍藍 #1E3A5F ＋ 活力橘 #FF6B35。橘色剛好是魔獸世界的「傳說」品質色，拿來標重要時刻；
+   橘色對白底只有 2.8:1，只畫圖形或當底色配深字，不直接當文字色。
+   字體：標題用思源黑體最粗（有精神）、內文思源黑體、數字與等級用 Barlow Condensed（像遊戲 HUD）。 */
 
 :root {
   color-scheme: light;
   --paper: #ffffff;
-  --mist: #f2f5f9;
+  --mist: #f3f6fa;
   --ink: #14263f;
   --navy: #1e3a5f;
   --slate: #3b4d63;
@@ -15,7 +17,18 @@
   --ember: #8c3410;
   --rule: #d5dde7;
 
-  --font-hand: 'LXGW WenKai TC', 'Noto Sans TC', sans-serif;
+  /* 物品品質（只用在小標籤：淡底＋同色系深字） */
+  --q-legendary-bg: #ffe3d6;
+  --q-legendary-fg: #8c3410;
+  --q-epic-bg: #eee8fb;
+  --q-epic-fg: #4a2a8a;
+  --q-rare-bg: #e3eefb;
+  --q-rare-fg: #0c447c;
+
+  --frame: 2px solid var(--navy);
+  --frame-shadow: 5px 5px 0 var(--navy);
+
+  --font-head: 'Noto Sans TC', -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
   --font-body: 'Noto Sans TC', -apple-system, 'PingFang TC', 'Microsoft JhengHei', sans-serif;
   --font-num: 'Barlow Condensed', 'Noto Sans TC', sans-serif;
 
@@ -66,8 +79,8 @@ video {
 h1,
 h2,
 h3 {
-  font-family: var(--font-hand);
-  font-weight: 700;
+  font-family: var(--font-head);
+  font-weight: 900;
   line-height: 1.3;
   color: var(--navy);
   margin: 0;
@@ -76,7 +89,7 @@ h3 {
 
 h1 { font-size: var(--step-4); letter-spacing: 0.01em; }
 h2 { font-size: var(--step-3); }
-h3 { font-size: var(--step-1); }
+h3 { font-size: var(--step-1); font-weight: 700; }
 
 p {
   margin: 0 0 1em;
@@ -139,12 +152,71 @@ a:hover {
 }
 
 .more {
-  font-weight: 500;
+  font-weight: 700;
   white-space: nowrap;
 }
 
 .muted {
   color: var(--slate);
+}
+
+/* 遊戲介面的外框：粗框＋實心位移陰影，只給最重要的卡片用 */
+.frame {
+  background: var(--paper);
+  border: var(--frame);
+  border-radius: 12px;
+  box-shadow: var(--frame-shadow);
+}
+
+/* 物品品質標籤 */
+.quality {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.6;
+  padding: 0 0.6rem;
+  border-radius: 6px;
+}
+
+.quality.legendary { background: var(--q-legendary-bg); color: var(--q-legendary-fg); }
+.quality.epic { background: var(--q-epic-bg); color: var(--q-epic-fg); }
+.quality.rare { background: var(--q-rare-bg); color: var(--q-rare-fg); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0.4rem 1.4rem;
+  border-radius: 8px;
+  background: var(--navy);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+  border: 2px solid var(--navy);
+  box-shadow: 3px 3px 0 var(--orange);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn:hover {
+  color: #fff;
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--orange);
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--orange);
+}
+
+.btn.ghost {
+  background: var(--paper);
+  color: var(--navy);
+  box-shadow: 3px 3px 0 var(--navy);
+}
+
+.btn.ghost:hover {
+  color: var(--navy);
+  box-shadow: 4px 4px 0 var(--navy);
 }
 
 .visually-hidden {
@@ -193,7 +265,7 @@ a:hover {
 
 .prose img {
   margin: 1.8em auto 0.4em;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .prose figure {
@@ -206,6 +278,14 @@ a:hover {
   color: var(--slate);
   text-align: center;
   margin-top: 0.4em;
+}
+
+.prose p > em:only-child {
+  display: block;
+  text-align: center;
+  font-size: var(--step--1);
+  color: var(--slate);
+  font-style: normal;
 }
 
 .prose ul,

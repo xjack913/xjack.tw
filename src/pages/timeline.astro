@@ -1,29 +1,35 @@
 ---
+// 成就（里程碑）：每一筆是一個解鎖的成就，一般 10 點、傳說級 50 點
 import Base from '../layouts/Base.astro';
-import { byYear, categories, formatMilestoneDate } from '../lib/milestones';
+import AchIcon from '../components/AchIcon.astro';
+import { achievementStats, byYear, categories, formatMilestoneDate, pointsOf } from '../lib/milestones';
 import type { MilestoneCategory } from '../data/milestones';
 import { legacyLinkMap } from '../lib/blog';
 
 const years = [...byYear().entries()];
-const total = years.reduce((n, [, list]) => n + list.length, 0);
+const stats = achievementStats();
 const used = new Set(years.flatMap(([, list]) => list.map((m) => m.cat)));
 const filters = Object.entries(categories).filter(([k]) => used.has(k as MilestoneCategory));
-// 連到舊部落格、Medium 的里程碑，若文章已搬來就改連站內
+// 連到舊部落格、Medium 的成就，若文章已搬來就改連站內
 const resolve = await legacyLinkMap();
 ---
 
-<Base title="里程碑" description="叉傑克 XJack 從求學、創立 RQ 跑力、成為爸爸到今天的重要時刻與成就。">
+<Base title="成就" description="叉傑克 XJack 從東華新手村、創立 RQ 跑力、當上桐爸到今天解鎖的每一個成就。">
   <section class="section">
     <div class="wrap">
       <header class="page-head">
-        <h1>里程碑</h1>
+        <h1>成就</h1>
         <p class="muted read">
-          跑步會把每一公里記成一段分段，這裡把人生的每一年記下來。目前收了 <span class="num strong">{total}</span>
-          件事，由新到舊排。橘色圓點是特別重要的時刻。
+          從東華新手村到今天，人生每解鎖一件事就記一筆，每筆都附上當時的紀錄。一般成就 10 點，橘色的傳說級成就 50 點。
         </p>
+        <dl class="board">
+          <div><dt>已解鎖</dt><dd class="num">{stats.count}</dd></div>
+          <div><dt>傳說級</dt><dd class="num">{stats.majors}</dd></div>
+          <div><dt>成就點數</dt><dd class="num">{stats.points.toLocaleString('en-US')}</dd></div>
+        </dl>
       </header>
 
-      <div class="filters" role="group" aria-label="依類別篩選">
+      <div class="filters" role="group" aria-label="依成就分類篩選">
         <button type="button" data-filter="all" aria-pressed="true">全部</button>
         {
           filters.map(([k, label]) => (
@@ -41,32 +47,37 @@ const resolve = await legacyLinkMap();
             <h2 class="year-num num" id={`h${year}`}>
               {year}
             </h2>
-            <ol class="events">
-              {list.map((m) => (
-                <li class:list={['event', { major: m.major }]} data-cat={m.cat}>
-                  <span class="dot" aria-hidden="true" />
-                  <div class="meta">
-                    <time class="num">{formatMilestoneDate(m.date)}</time>
-                    <span class="cat">{categories[m.cat]}</span>
-                    {m.major && <span class="visually-hidden">（重要時刻）</span>}
-                  </div>
-                  <div class="content">
-                    <h3>{m.title}</h3>
-                    {m.text && <p set:html={m.text} />}
-                    {m.link && (() => {
-                      const href = resolve(m.link)!;
-                      const external = !href.startsWith('/');
-                      return (
+            <ol class="achs">
+              {list.map((m) => {
+                const href = m.link ? resolve(m.link)! : undefined;
+                const external = href && !href.startsWith('/');
+                return (
+                  <li class:list={['ach', { major: m.major }]} data-cat={m.cat}>
+                    <span class="badge" aria-hidden="true">
+                      <AchIcon cat={m.cat} />
+                    </span>
+                    <div class="body">
+                      <p class="meta">
+                        <time class="num">{formatMilestoneDate(m.date)}</time>
+                        <span class="cat">{categories[m.cat]}</span>
+                        {m.major && <span class="quality legendary">傳說級</span>}
+                      </p>
+                      <h3>{m.title}</h3>
+                      {m.text && <p class="text" set:html={m.text} />}
+                      {href && (
                         <p class="link">
                           <a href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
-                            {m.linkLabel ?? '看更多'}
+                            {m.linkLabel ?? '看紀錄'}
                           </a>
                         </p>
-                      );
-                    })()}
-                  </div>
-                </li>
-              ))}
+                      )}
+                    </div>
+                    <span class="pts num" aria-label={`${pointsOf(m)} 點`}>
+                      +{pointsOf(m)}
+                    </span>
+                  </li>
+                );
+              })}
             </ol>
           </section>
         ))
@@ -77,22 +88,22 @@ const resolve = await legacyLinkMap();
 
 <script>
   const buttons = [...document.querySelectorAll<HTMLButtonElement>('.filters button')];
-  const events = [...document.querySelectorAll<HTMLElement>('.event')];
+  const items = [...document.querySelectorAll<HTMLElement>('.ach')];
   const years = [...document.querySelectorAll<HTMLElement>('.year')];
   const status = document.querySelector<HTMLElement>('.filter-status');
 
   function apply(filter: string) {
     let shown = 0;
-    for (const ev of events) {
-      const show = filter === 'all' || ev.dataset.cat === filter;
-      ev.hidden = !show;
+    for (const it of items) {
+      const show = filter === 'all' || it.dataset.cat === filter;
+      it.hidden = !show;
       if (show) shown++;
     }
     for (const y of years) {
-      y.hidden = !y.querySelector('.event:not([hidden])');
+      y.hidden = !y.querySelector('.ach:not([hidden])');
     }
     for (const b of buttons) b.setAttribute('aria-pressed', String(b.dataset.filter === filter));
-    if (status) status.textContent = filter === 'all' ? '' : `顯示 ${shown} 件`;
+    if (status) status.textContent = filter === 'all' ? '' : `這個分類解鎖了 ${shown} 個成就`;
   }
 
   for (const b of buttons) b.addEventListener('click', () => apply(b.dataset.filter ?? 'all'));
@@ -107,9 +118,36 @@ const resolve = await legacyLinkMap();
     margin-bottom: 0.6rem;
   }
 
-  .strong {
+  .board {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+  }
+
+  .board div {
+    border: var(--frame);
+    border-radius: 12px;
+    box-shadow: 4px 4px 0 var(--navy);
+    padding: 0.5rem 1.25rem;
+    min-width: 8.5rem;
+  }
+
+  .board div:last-child {
+    background: var(--orange-soft);
+  }
+
+  .board dt {
     font-weight: 700;
-    font-size: 1.3em;
+    color: var(--slate);
+    font-size: var(--step--1);
+  }
+
+  .board dd {
+    margin: 0;
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.1;
     color: var(--navy);
   }
 
@@ -123,24 +161,24 @@ const resolve = await legacyLinkMap();
   .filters button {
     font: inherit;
     font-size: var(--step--1);
-    font-weight: 500;
+    font-weight: 700;
     color: var(--navy);
     background: var(--paper);
-    border: 2px solid var(--rule);
-    border-radius: 999px;
+    border: 2px solid var(--navy);
+    border-radius: 8px;
     padding: 0.3rem 1rem;
     cursor: pointer;
     min-height: 44px;
   }
 
   .filters button:hover {
-    border-color: var(--navy);
+    background: var(--mist);
   }
 
   .filters button[aria-pressed='true'] {
     background: var(--navy);
-    border-color: var(--navy);
     color: #fff;
+    box-shadow: 3px 3px 0 var(--orange);
   }
 
   .filter-status {
@@ -169,56 +207,62 @@ const resolve = await legacyLinkMap();
     align-self: start;
   }
 
-  .events {
+  .achs {
     list-style: none;
     margin: 0;
-    padding: 0 0 1rem;
-    border-left: 3px solid var(--rule);
-  }
-
-  .event {
-    position: relative;
+    padding: 0;
     display: grid;
-    grid-template-columns: 9.5rem 1fr;
-    gap: 0.25rem 1.5rem;
-    padding: 0 0 1.75rem 1.75rem;
+    gap: 0.75rem;
   }
 
-  .event[hidden] {
+  .ach {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    gap: 0 1rem;
+    align-items: start;
+    background: var(--paper);
+    border: 2px solid var(--rule);
+    border-radius: 12px;
+    padding: 0.9rem 1.1rem;
+  }
+
+  .ach[hidden] {
     display: none;
   }
 
-  .dot {
-    position: absolute;
-    left: -9px;
-    top: 0.45rem;
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background: var(--paper);
-    border: 3px solid var(--navy);
+  .ach.major {
+    border-color: var(--navy);
+    box-shadow: 4px 4px 0 var(--orange);
   }
 
-  .major .dot {
-    left: -12px;
-    top: 0.3rem;
-    width: 21px;
-    height: 21px;
+  .badge {
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: var(--navy);
+    background: var(--mist);
+    border: 2px solid var(--navy);
+  }
+
+  .major .badge {
     background: var(--orange);
-    border-color: var(--orange);
-    box-shadow: 0 0 0 4px var(--orange-soft);
+    color: var(--ink);
   }
 
   .meta {
     display: flex;
-    flex-direction: column;
-    line-height: 1.4;
-    padding-top: 0.15rem;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+    align-items: baseline;
+    margin: 0 0 0.1rem;
+    line-height: 1.5;
   }
 
   .meta time {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.15rem;
+    font-weight: 700;
     color: var(--navy);
   }
 
@@ -227,21 +271,37 @@ const resolve = await legacyLinkMap();
     color: var(--slate);
   }
 
-  .content h3 {
+  h3 {
     font-size: var(--step-1);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
   }
 
-  .major .content h3 {
+  .major h3 {
     font-size: var(--step-2);
   }
 
-  .content p {
-    margin-bottom: 0.4rem;
+  .text {
+    margin-bottom: 0.3rem;
   }
 
   .link {
-    font-weight: 500;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .pts {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy);
+    background: var(--mist);
+    border-radius: 8px;
+    padding: 0 0.6rem;
+    line-height: 1.7;
+  }
+
+  .major .pts {
+    background: var(--orange-soft);
+    color: var(--ember);
   }
 
   @media (max-width: 760px) {
@@ -254,14 +314,19 @@ const resolve = await legacyLinkMap();
       margin-bottom: 1rem;
     }
 
-    .event {
-      grid-template-columns: 1fr;
+    .ach {
+      grid-template-columns: 2.75rem minmax(0, 1fr);
     }
 
-    .meta {
-      flex-direction: row;
-      gap: 0.75rem;
-      align-items: baseline;
+    .badge {
+      width: 2.75rem;
+      height: 2.75rem;
+    }
+
+    .pts {
+      grid-column: 2;
+      justify-self: start;
+      margin-top: 0.4rem;
     }
   }
 </style>
