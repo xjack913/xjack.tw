@@ -19,7 +19,7 @@ export const person = {
   level: 'Lv.40+',
   classes: [
     { kind: '主職', name: '創業者' },
-    { kind: '興趣', name: '跑者' },
+    { kind: '興趣', name: '幫助跑者' },
     { kind: '本命', name: '魔獸玩家' },
   ],
   // 首頁自我介紹（口語版）
