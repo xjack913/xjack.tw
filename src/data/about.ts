@@ -2,11 +2,11 @@
 
 // 基本資料：本名只在這一頁出現
 export const profile = [
-  { label: '玩家名稱', value: '叉傑克 XJack' },
   { label: '本名', value: '許紘瑋（Hung-Wei Hsu）' },
-  { label: '出身', value: '出生在臺北的雲林人，在花蓮東華練功八年' },
+  // 東華資工：大學 4 年＋碩士 2 年＋博士班 6 年（XJack 2026-10-28 更正）
+  { label: '出身', value: '出生在臺北的雲林人，在花蓮東華練功十二年' },
   { label: '公會', value: 'RQ 跑力（共同創辦人暨執行長）' },
-  { label: '隊友', value: '徐國峰、羅譽寅兩位教練，還有不用睡覺的 Claude Code' },
+  { label: '隊友', value: '徐國峰、羅譽寅兩位教練，還有不用睡覺的 AI' },
   { label: '家族', value: '桐媽、桐桐' },
   { label: '名字由來', value: '「叉傑克」原本是我的線上遊戲暱稱，後來就一路用到現在' },
 ];
