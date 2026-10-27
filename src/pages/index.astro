@@ -1,10 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import CharacterCard from '../components/CharacterCard.astro';
+import FbFeed from '../components/FbFeed.astro';
 import LapChart from '../components/LapChart.astro';
 import PostList from '../components/PostList.astro';
 import ProjectRow from '../components/ProjectRow.astro';
 import { links, person } from '../data/site';
+import fbFeed from '../data/fb-latest.json';
 import { now, nowUpdated } from '../data/now';
 import { projects } from '../data/projects';
 import { getPosts } from '../lib/blog';
@@ -66,6 +68,21 @@ const ach = achievementStats();
   <section class="section">
     <div class="wrap">
       <div class="section-head">
+        <div>
+          <h2>世界頻道</h2>
+          <p>
+            Facebook 粉專「{fbFeed.page.name}」最近的貼文，<b class="num">{fbFeed.page.followers.toLocaleString('en-US')}</b> 人在追蹤。
+          </p>
+        </div>
+        <a class="more" href={links.facebook.url} rel="noopener" target="_blank">追蹤粉專</a>
+      </div>
+      <FbFeed />
+    </div>
+  </section>
+
+  <section class="section band">
+    <div class="wrap">
+      <div class="section-head">
         <h2>裝備欄</h2>
         <a class="more" href="/projects/">看全部裝備</a>
       </div>
@@ -75,7 +92,7 @@ const ach = achievementStats();
     </div>
   </section>
 
-  <section class="section band">
+  <section class="section">
     <div class="wrap posts-grid">
       <div>
         <h2>冒險日誌</h2>
@@ -86,7 +103,7 @@ const ach = achievementStats();
     </div>
   </section>
 
-  <section class="section contact">
+  <section class="section band contact">
     <div class="wrap read">
       <h2>有事密我</h2>
       <p>

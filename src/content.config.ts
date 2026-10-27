@@ -2,7 +2,7 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-// 文章：舊站「叉傑克不跑步聊數據」搬來的文章，之後新寫的也放這裡。
+// 文章：以前各個部落格搬來的文章，之後新寫的也放這裡。
 // 舊文章用原站編號當網址（/blog/1310/），舊網址 /w/bd/1310 會轉址過來。
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
