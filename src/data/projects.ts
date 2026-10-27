@@ -76,6 +76,9 @@ export const projects: Project[] = [
     flavor: '素材由桐桐無償提供，爸爸負責被吐槽。',
     url: 'https://www.facebook.com/rqxjack',
     urlLabel: '到粉絲專頁看漫畫',
+    // 預覽圖：雲端「桐爸日記漫畫」典藏裡三篇已發表的（260301、260303、260312）
+    image: '/images/projects/tongba-diary.jpg',
+    imageAlt: '三篇桐爸日記漫畫：〈升級只差 2396 步〉、〈桐桐的人生優先順序〉、〈男子廁所守護神〉',
   },
   {
     id: 'line-stickers',
@@ -86,6 +89,9 @@ export const projects: Project[] = [
     summary: '把桐爸日記的角色做成 40 張一組的 LINE 貼圖，第一組「萬用日常大字」已經上架。',
     url: 'https://store.line.me/stickershop/product/37327326/zh-Hant',
     urlLabel: '到 LINE 貼圖小舖',
+    // 預覽圖：已上架的 A 版（RQ 款）挑 6 張
+    image: '/images/projects/line-stickers.jpg',
+    imageAlt: '桐爸日記 LINE 貼圖六張：讚啦！、哈哈哈、我錯了、你說呢？、加油！、掰掰',
   },
   {
     id: 'blog',
