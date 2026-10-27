@@ -5,8 +5,11 @@ import { qualityLabel, type Project } from '../data/projects';
 interface Props {
   project: Project;
   compact?: boolean;
+  /** 卡片名稱的標題層級：作品頁直接在 h1 底下用 2，首頁在「裝備欄」h2 底下用 3 */
+  level?: 2 | 3;
 }
-const { project: p, compact = false } = Astro.props;
+const { project: p, compact = false, level = 3 } = Astro.props;
+const Heading = `h${level}`;
 const external = p.url && !p.url.startsWith('/');
 ---
 
@@ -31,7 +34,7 @@ const external = p.url && !p.url.startsWith('/');
       <span class="num period">{p.period}</span>
       <span class="status">{p.status}</span>
     </p>
-    <h3>{p.name}</h3>
+    <Heading class="name">{p.name}</Heading>
     <p class="summary">{p.summary}</p>
     {p.flavor && !compact && <p class="flavor">「{p.flavor}」</p>}
     {
@@ -102,7 +105,7 @@ const external = p.url && !p.url.startsWith('/');
     color: var(--slate);
   }
 
-  h3 {
+  .name {
     font-size: var(--step-2);
     font-weight: 900;
     margin-bottom: 0.4rem;
