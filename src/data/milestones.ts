@@ -868,7 +868,7 @@ export const milestones: Milestone[] = [
     date: '2026-02-22',
     cat: 'rq',
     title: 'AI 加入 RQ 開發',
-    text: '春節九天和 Claude Code 一起推進產品、更新 20 多個 PR；之後三週就做完過去三個月的開發量。',
+    text: '春節九天和 AI 一起推進產品、更新 20 多個 PR；之後三週就做完過去三個月的開發量。',
     link: fb('1390626626411891'),
     linkLabel: '看貼文',
   },
