@@ -78,6 +78,13 @@ const ogImage = cover ? (await getImage({ src: cover, width: Math.min(1200, cove
 </Base>
 
 <style>
+  /* 閱讀欄比 .wrap 窄，置中才不會在寬螢幕上貼左邊、右邊空一大塊 */
+  .head,
+  .prose,
+  .pager {
+    margin-inline: auto;
+  }
+
   .head {
     margin-bottom: 2.5rem;
   }
