@@ -19,5 +19,7 @@ export default defineConfig({
   },
   markdown: {
     shikiConfig: { theme: 'github-light' },
+    // 文章是當年的原文，不要把「...」換成「…」、把 5'50'' 換成彎引號
+    smartypants: false,
   },
 });

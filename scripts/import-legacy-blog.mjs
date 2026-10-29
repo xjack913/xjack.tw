@@ -128,6 +128,8 @@ for (const file of files) {
   });
 
   body = body.replace(/!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/g, (all, url) => (failedUrls.has(url) ? lostNote : all));
+  // 耐力網的舊網域被別人拿走，現在會轉去賭博網站：拿掉連結，只留文字
+  body = body.replace(/\[([^\]]*)\]\(https?:\/\/(?:[\w-]+\.)*center4gaming\.org[^)\s]*\)/g, '$1');
 
   let fm = front;
   if (failedUrls.has(fm.match(/^cover:\s*"?([^"\n]+)"?/m)?.[1])) fm = fm.replace(/^cover:.*\n?/m, '');

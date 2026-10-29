@@ -22,15 +22,20 @@ const byId = new Map(posts.map((p) => [p.id, p]));
 const tpe = (iso) => new Date(new Date(iso).getTime() + 8 * 3600e3).toISOString().slice(0, 10);
 const yaml = (s) => JSON.stringify(s);
 
-// 行首會被當成 Markdown 語法的字元，以及行內的強調、連結、HTML 符號，一律跳脫成原字
+// 行首會被當成 Markdown 語法的字元，以及行內的強調、連結、HTML 符號，一律跳脫成原字。
+// 例外：原文用 **字** 標重點（臉書不會顯示粗體），網站照作者的意思顯示成粗體
+const BOLD = '\u0001';
+const inline = (s) => s.replace(/([\\`*_[\]<>])/g, '\\$1');
 const escape = (line) =>
-  line
-    .replace(/([\\`*_[\]<>])/g, '\\$1')
+  inline(line.replace(/\*\*(.+?)\*\*/g, `${BOLD}$1${BOLD}`))
     .replace(/^(\s*)([#>+\-=|~])/, '$1\\$2')
-    .replace(/^(\s*\d+)([.)])/, '$1\\$2');
+    .replace(/^(\s*\d+)([.)])/, '$1\\$2')
+    .replaceAll(BOLD, '**');
+// 原本放在留言的連結補回內文：facebook-edits.json 的 link 把那行的 text 變成連結
+const LINK = '\u0002';
 
 const hashtagLine = (l) => /^\s*(#\S+\s*)+$/.test(l);
-const ruleLine = (l) => /^\s*[-—–_]{2,}\s*$/.test(l);
+const ruleLine = (l) => /^\s*[-—–_]+\s*$/.test(l);
 
 rmSync(dest, { recursive: true, force: true });
 mkdirSync(dest, { recursive: true });
@@ -45,11 +50,17 @@ for (const e of edits) {
     if (!lines[i]?.includes(r.from)) throw new Error(`#${e.n} 第 ${r.line} 行沒有「${r.from}」`);
     lines[i] = lines[i].replace(r.from, r.to);
   }
+  for (const [k, r] of (e.link ?? []).entries()) {
+    const i = r.line - 1;
+    if (!lines[i]?.includes(r.text)) throw new Error(`#${e.n} 第 ${r.line} 行沒有「${r.text}」`);
+    lines[i] = lines[i].replace(r.text, `${LINK}${k}${LINK}`);
+  }
   const drop = new Set();
   for (const [a, b] of e.cut) for (let i = a; i <= b; i++) drop.add(i - 1);
   if (e.dropFirstLine) drop.add(lines.findIndex((l) => l.trim()));
 
-  const kept = lines.filter((l, i) => !drop.has(i) && !hashtagLine(l) && !ruleLine(l));
+  // 分隔線換成空行：上下照樣分成兩段，只是不畫線
+  const kept = lines.flatMap((l, i) => (drop.has(i) || hashtagLine(l) ? [] : ruleLine(l) ? [''] : [l]));
   // 網站不能出現的字（娶嫁、爸爸不想看到的「快 40 年」「殺進殺出」）
   for (const word of ['娶', '嫁', '殺進殺出', '快 40 年', '快40年']) {
     if (kept.some((l) => l.includes(word)) || e.title.includes(word)) throw new Error(`#${e.n} 還有「${word}」`);
@@ -63,9 +74,12 @@ for (const e of edits) {
     else if (cur.length) blocks.push(cur), (cur = []);
   }
   if (cur.length) blocks.push(cur);
-  const body = blocks.map((b) => b.map(escape).join('\\\n')).join('\n\n');
+  const body = blocks
+    .map((b) => b.map(escape).join('\\\n'))
+    .join('\n\n')
+    .replace(new RegExp(`${LINK}(\\d+)${LINK}`, 'g'), (_, k) => `[${inline(e.link[k].text)}](${e.link[k].url})`);
 
-  const flat = blocks[0].join('');
+  const flat = blocks[0].join('').replace(/\*\*(.+?)\*\*/g, '$1');
   const excerpt = flat.length > 80 ? `${flat.slice(0, 80)}…` : flat;
 
   const date = tpe(post.created_time);
