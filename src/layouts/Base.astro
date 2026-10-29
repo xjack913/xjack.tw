@@ -40,7 +40,8 @@ const personLd = {
   jobTitle: 'RQ 跑力共同創辦人暨執行長',
   worksFor: { '@type': 'Organization', name: 'RQ 跑力（RunningQuotient）', url: links.rq.url },
   alumniOf: { '@type': 'CollegeOrUniversity', name: '國立東華大學' },
-  sameAs: [links.facebook.url, links.instagram.url, links.youtube.url, links.medium.url, links.linkedin.url, links.github.url],
+  // LinkedIn 網址裡有本名，跟 alternateName 一樣只在關於我頁放
+  sameAs: [links.facebook.url, links.instagram.url, links.youtube.url, links.medium.url, ...(fullIdentity ? [links.linkedin.url] : []), links.github.url],
 };
 ---
 

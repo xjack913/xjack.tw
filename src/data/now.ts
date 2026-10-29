@@ -19,7 +19,7 @@ export const now = [
   {
     kind: '每週任務',
     label: '桐爸日記',
-    text: '每週一、四在 <a href="https://www.facebook.com/rqxjack" target="_blank" rel="noopener">粉絲專頁</a> 更新桐桐的家庭漫畫，素材由桐桐無償提供。LINE 貼圖也上架了。',
+    text: '每週一、四在<a href="https://www.facebook.com/rqxjack" target="_blank" rel="noopener">粉絲專頁</a>更新桐桐的家庭漫畫，素材由桐桐無償提供。LINE 貼圖也上架了。',
     progress: '每週一、四',
   },
   {
