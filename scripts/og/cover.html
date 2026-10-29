@@ -31,8 +31,10 @@
   <script>
     const q = new URLSearchParams(location.search);
     const h1 = document.getElementById('title');
-    // 「|」是手動斷行（中文自動斷行常把詞切開）；結尾的句號在封面上拿掉
-    for (const [i, line] of (q.get('title') ?? '').replace(/。$/, '').split('|').entries()) {
+    // 「|」是手動斷行（中文自動斷行常把詞切開），有手動斷行就不再自動斷；結尾的句號在封面上拿掉
+    const title = q.get('title') ?? '';
+    if (title.includes('|')) h1.style.whiteSpace = 'nowrap';
+    for (const [i, line] of title.replace(/。$/, '').split('|').entries()) {
       if (i) h1.append(document.createElement('br'));
       h1.append(line);
     }
