@@ -269,7 +269,8 @@ const xp = rqYear();
   dl {
     margin: 0;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    /* min()：手機字體放大時 16rem 會比螢幕寬，改成最多佔滿一整列 */
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
     gap: 0.6rem 2.5rem;
   }
 
@@ -333,7 +334,7 @@ const xp = rqYear();
 
   @media (max-width: 760px) {
     .card {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       grid-template-areas: 'portrait' 'info' 'stats';
     }
 

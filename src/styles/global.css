@@ -85,6 +85,8 @@ h3 {
   color: var(--navy);
   margin: 0;
   text-wrap: balance;
+  /* 「RunningQuotient」這種被括號包住的英文不能斷行，手機上會把整頁撐寬 */
+  overflow-wrap: anywhere;
 }
 
 h1 { font-size: var(--step-4); letter-spacing: 0.01em; }
@@ -246,6 +248,8 @@ a:hover {
 /* 文章內文 */
 .prose {
   max-width: var(--read);
+  /* 舊文裡的長網址沒有空格可以換行，手機上會把整頁撐寬 */
+  overflow-wrap: anywhere;
 }
 
 .prose h2 {

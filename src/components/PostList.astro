@@ -44,7 +44,7 @@ const { posts, compact = false } = Astro.props;
 
   .hit {
     display: grid;
-    grid-template-columns: 160px 1fr;
+    grid-template-columns: 160px minmax(0, 1fr);
     gap: 1.25rem;
     align-items: start;
     padding: 0.9rem 0;
@@ -99,6 +99,7 @@ const { posts, compact = false } = Astro.props;
     font-size: var(--step-1);
     line-height: 1.4;
     color: var(--navy);
+    overflow-wrap: anywhere;
   }
 
   .hit:hover .title {
@@ -118,7 +119,7 @@ const { posts, compact = false } = Astro.props;
 
   @media (max-width: 560px) {
     .hit {
-      grid-template-columns: 96px 1fr;
+      grid-template-columns: 96px minmax(0, 1fr);
       gap: 0.9rem;
     }
 

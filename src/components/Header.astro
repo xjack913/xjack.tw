@@ -68,6 +68,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
 
   ul {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.25rem 0.5rem;
     list-style: none;
     margin: 0;
@@ -82,6 +83,8 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     font-weight: 700;
     color: var(--ink);
     border: 2px solid transparent;
+    /* 擠不下時整個選項換到下一行，不要把「角色檔案」拆成一字一行 */
+    white-space: nowrap;
   }
 
   nav a:hover {
