@@ -33,9 +33,14 @@ const coverFallback = {
 // 沒有照片、或沒有適合當封面的照片：用 scripts/og/cover.mjs 做一張（標題用「|」斷行、分類）
 const madeCover = {
   'medium/2020-11-28-df407f858d30.md': ['親身經歷產後大出血事故|（母女均安）之重點分享', '家庭與桐爸'],
-  'biji/2014-03-19-678.md': ['人生第一場路跑賽！|(五公里)', '比賽心得'],
-  'biji/2014-08-18-984.md': ['曬到不行的|2014都蘭初半馬', '比賽心得'],
   'blogger/2019-02-02-108c.md': ['【臺北市108年田徑C級教練】|課程筆記摘要', '跑步知識'],
+};
+// 原文沒有照片：從 XJack 的 Google 相簿找回比賽當天的照片，放在備份資料夾 images/<代號>/01.jpg。
+// 內文開頭放整張；照片是直的，封面從 top（原圖高度的比例）往下裁一張 16:10
+const addedPhoto = {
+  // 比賽是 2013-12-22，心得 2014 年 3 月才寫
+  'biji/2014-03-19-678.md': { alt: '2013 花蓮太平洋縱谷馬拉松會場，拿著完賽毛巾', top: 0.13 },
+  'biji/2014-08-18-984.md': { alt: '2014 都蘭夏日馬拉松，沿著海岸步道往前跑的背影', top: 0.03 },
 };
 
 // 同一篇發在好幾個地方：留最早的原文（Blogger）或圖片最完整的版本，其他版本只記在 alsoAt
@@ -104,7 +109,9 @@ const files = readdirSync(src).filter(
 );
 for (const file of files) {
   const md = readFileSync(path.join(src, file), 'utf8').replace(/^﻿/, '');
-  const [, front, body0] = md.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+  const [, front, raw] = md.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+  const added = addedPhoto[`${source}/${file}`];
+  const body0 = added ? `\n![${added.alt}](./images/${file.slice(11, -3)}/01.jpg)\n${raw}` : raw;
   // 圖片資料夾代號：./images/<key>/...
   const key = body0.match(/\.\/images\/([^/]+)\//)?.[1] ?? front.match(/\.\/images\/([^/]+)\//)?.[1];
   const hide = new Set([...(hidden[key] ?? []), ...(extraHidden[key] ?? [])]);
@@ -126,9 +133,9 @@ for (const file of files) {
   if (failedUrls.has(fm.match(/^cover:\s*"?([^"\n]+)"?/m)?.[1])) fm = fm.replace(/^cover:.*\n?/m, '');
   // 做的封面放進這篇的圖片資料夾；沒有圖的文章用檔名裡的代號當資料夾
   const made = madeCover[`${source}/${file}`];
-  const madeDir = made && (key ?? file.slice(11, -3));
+  const madeDir = (made || added) && (key ?? file.slice(11, -3));
   const coverName = fm.match(/cover:\s*"\.\/images\/[^/]+\/([^"]+)"/)?.[1];
-  if (made) {
+  if (made || added) {
     const line = `cover: "./images/${madeDir}/cover.jpg"`;
     fm = /^cover:/m.test(fm) ? fm.replace(/^cover:[^\r\n]*/m, line) : `${fm}\n${line}`;
   } else if (coverName && hide.has(coverName)) {
@@ -167,6 +174,17 @@ for (const file of files) {
     const out = path.join(dest, 'images', madeDir, 'cover.jpg');
     mkdirSync(path.dirname(out), { recursive: true });
     execFileSync(process.execPath, ['scripts/og/cover.mjs', out, title, tag, file.slice(0, 10).replaceAll('-', '.')], { stdio: 'ignore' });
+  }
+  if (added) {
+    const input = path.join(src, 'images', madeDir, '01.jpg');
+    const { width, height } = await sharp(input).rotate().metadata();
+    const h = Math.round((width * 10) / 16);
+    await sharp(input)
+      .rotate()
+      .extract({ left: 0, top: Math.min(Math.round(height * added.top), height - h), width, height: h })
+      .resize({ width: 1400 })
+      .jpeg({ quality: 80, mozjpeg: true })
+      .toFile(path.join(dest, 'images', madeDir, 'cover.jpg'));
   }
   console.log(file, hide.size ? `（拿掉 ${hide.size} 張）` : '');
 }
