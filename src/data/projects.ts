@@ -36,7 +36,7 @@ export const projects: Project[] = [
     flavor: '當年只是想幫國峰寫個程式算跑力，沒想到寫成一家公司。',
     url: 'https://www.runningquotient.com/',
     urlLabel: '前往 RQ 跑力',
-    // 預覽圖：自己做的圖卡，LOGO 是 RQ repo 的 2022 橫式彩色版（web/img/logo/rqlogolong2022.png），時間軸五件事都出自 milestones.ts（官網首頁是素材照片配註冊鈕，像廣告所以不用）
+    // 預覽圖：自己做的圖卡，LOGO 是 2022 品牌重塑的「中文標準標誌組合_彩色版1」（雲端 2022品牌重塑／VI最終版本檔案／VI-1212_最終版本／png，裁掉留白），時間軸五件事都出自 milestones.ts（官網首頁是素材照片配註冊鈕，像廣告所以不用）
     image: '/images/projects/rq.jpg',
     imageAlt: 'RQ 跑力圖卡：2013 跑力計算器上線、2016 共同創立、2019 第二代即時跑力、2023 註冊破 10 萬、2026 十週年',
     featured: true,
