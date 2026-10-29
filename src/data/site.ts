@@ -48,6 +48,9 @@ export const links = {
   rq: { label: 'RQ 跑力', url: 'https://www.runningquotient.com/' },
 };
 
+// GA4：XJack 個人 Google 帳號下獨立的「叉傑克 XJack 個人網站」資源（2026-10-29 建，跟貓貓島分開）
+export const analyticsId = 'G-5XDRZB704V';
+
 // 選單：遊戲角色檔案的說法，第一次來的人也看得懂
 export const nav = [
   { href: '/about/', label: '角色檔案' },
