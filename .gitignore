@@ -3,6 +3,12 @@ dist/
 .astro/
 .env
 .env.*
+# 祕密檔（XJack 其他 repo 的習慣是放在 repo 根）和臉書 API 備份，不能進公開 repo
+.fb-token
+.gemini-api-key
+*.pem
+*.key
+page-all.json
 .DS_Store
 Thumbs.db
 scripts/og/og.png
