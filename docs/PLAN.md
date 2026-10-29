@@ -77,13 +77,15 @@ XJack 的個性是樂觀、風趣、愛出去闖、二十年魔獸世界玩家�
 ## 7. 正式切換步驟（驗收通過後才做）
 
 > 2026-10-29 依上線評估改寫。舊版的順序會讓驗收站太早開放收錄，`public/CNAME` 也不會生效，還少了退回方法。
+>
+> **2026-10-29 晚上已完成第 1～6 步**：xjack.tw 正式改由這個 repo 服務，憑證涵蓋 xjack.tw 和 www（2027-01-27 到期，GitHub 會自動續），已開強制 HTTPS，new.xjack.tw 紀錄已刪。還沒做的是第 7 步（Search Console）和第 8 步（2～4 週後通知 RQ）。
 
 **為什麼 DNS 用灰雲（只走 DNS、不代理）**：GitHub 要先確認網域真的指到 GitHub Pages，才會替網站申請 HTTPS 憑證。開橘雲時查到的是 Cloudflare 的位址，檢查不會過，憑證發不下來。橘雲保護的是自己的主機（藏住位址、擋攻擊），RQ 舊站有 AWS 主機所以需要；新站是 GitHub 託管的靜態網頁，沒有主機、資料庫、登入可以被打，GitHub Pages 本身就放在 CDN 上。bet、tong 也是灰雲。
 
 ### 事前
 
 - [x] 在 GitHub 帳號驗證 xjack.tw 網域（2026-10-29，Cloudflare 上的 `_github-pages-challenge-xjack913` TXT 紀錄，不要刪）：別的 GitHub 帳號不能拿 xjack.tw 和它的子網域架站。
-- [x] 匯出 Cloudflare DNS 備份（2026-10-29，`xjack.tw.txt`，在 XJack 電腦的下載資料夾）。裡面有 RQ 主機位址，所以不進 repo；退回時照它改。
+- [x] 匯出 Cloudflare DNS 備份（2026-10-29 切換前，`xjack.tw-dns-2026-10-29-切換前.json`，在 XJack 電腦的下載資料夾；比更早的 `xjack.tw.txt` 多三筆 TXT）。裡面有 RQ 主機位址，所以不進 repo；退回時照它改。
 - 挑晚上人少的時候做：憑證最久要等 1 小時，這段時間 https://xjack.tw 可能出現憑證警告。
 
 ### 切換當天
@@ -96,11 +98,13 @@ XJack 的個性是樂觀、風趣、愛出去闖、二十年魔獸世界玩家�
    - 一個 Pages 網站只能有一個網域，按下 Save 的同時 `new.xjack.tw` 就失效了。
 3. **設 Actions 變數 `SITE_URL` = `https://xjack.tw`**（repo Settings → Secrets and variables → Actions → Variables），再到 Actions 手動跑一次「部署到 GitHub Pages」（Run workflow）。這版開始 canonical、sitemap、RSS 都用 xjack.tw，`robots.txt` 和每頁的 `noindex` 也改成開放收錄。
    - 一定要在第 1、2 步之後才設。太早設，還在驗收的 new.xjack.tw 會開放收錄，又宣稱正本在當時還是 RQ 舊站的 xjack.tw。
+   - 變數要建在 **repo 層級**（Repository variables），不是 Environment 底下：建置那個 job 沒有指定 environment，建在 environment 讀不到，會靜默退回 new.xjack.tw。值一字不差 `https://xjack.tw`，結尾不加斜線。
    - `public/CNAME` 不用改：部署走 GitHub Actions，GitHub 不看這個檔，網域只看 Pages 設定。
 
 ### 憑證發好之後（通常幾分鐘，最久 1 小時）
 
-4. Pages 設定頁勾「Enforce HTTPS」。
+4. 先確認憑證同時涵蓋 `xjack.tw` 和 `www.xjack.tw`（Pages 設定頁不再顯示憑證申請中，或 `gh api repos/xjack913/xjack.tw/pages` 的 `https_certificate.state` 是 `approved`、`domains` 兩個都有），再勾「Enforce HTTPS」。換網域時 GitHub 會自動把強制 HTTPS 關掉，要記得重新勾。
+   - 等了 10～20 分鐘還看不到憑證（API 回的資料裡連 `https_certificate` 都沒有）：Pages 設定頁按 Remove 拿掉網域，再重新填 `xjack.tw` 按 Save，GitHub 會重新申請。2026-10-29 切換時就是這樣：用 API 改網域後等了 40 分鐘都沒有開始申請，拿掉再加回去後 1 分鐘就核發了。
 5. 逐項檢查：
    - https://xjack.tw 和 https://www.xjack.tw 都打得開、沒有憑證警告；www 和 http:// 都會轉到 https://xjack.tw。
    - 首頁原始碼沒有 `noindex`，`canonical` 是 `https://xjack.tw/`；https://xjack.tw/robots.txt 允許收錄，sitemap 指向 xjack.tw。
@@ -117,7 +121,7 @@ XJack 的個性是樂觀、風趣、愛出去闖、二十年魔獸世界玩家�
 
 ### 出問題時怎麼退回
 
-1. Cloudflare：`xjack.tw` 和 `www` 照 `xjack.tw.txt` 改回原本的目標，改回橘雲（主網域如果已經改成 A／AAAA，先刪掉再加回 CNAME）。
+1. Cloudflare：`xjack.tw` 和 `www` 照 `xjack.tw-dns-2026-10-29-切換前.json` 改回原本的目標，改回橘雲（主網域如果已經改成 A／AAAA，先刪掉再加回 CNAME）。
 2. 要繼續驗收的話：Cloudflare 加回 `new.xjack.tw` CNAME → `xjack913.github.io`（灰雲），Pages 自訂網域改回 `new.xjack.tw`。
 3. 刪掉 Actions 變數 `SITE_URL`，手動重跑部署，網站回到不收錄的驗收狀態。
 

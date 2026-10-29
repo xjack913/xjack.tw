@@ -1090,7 +1090,7 @@ export const milestones: Milestone[] = [
     linkLabel: '上島玩',
   },
   {
-    date: '2026-10-27',
+    date: '2026-10-29',
     cat: 'creative',
     title: '個人網站搬家',
     text: 'xjack.tw 從 RQ 官網系統搬出來，變成獨立的個人網站，舊文章全部跟著搬家。',

@@ -2,8 +2,7 @@
 
 叉傑克 XJack 的個人網站：自我介紹、人生與事業的里程碑、做過的作品，以及以前各個部落格搬來的文章。
 
-- 驗收網址：https://new.xjack.tw
-- 正式網址（切換後）：https://xjack.tw
+- 網址：https://xjack.tw（2026-10-29 從 RQ 官網系統切換過來）
 - 規劃書：[docs/PLAN.md](docs/PLAN.md)
 
 ## 常改的地方
