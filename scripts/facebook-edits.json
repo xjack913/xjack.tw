@@ -218,8 +218,8 @@
     "id": "104140774603169_1350543963753491",
     "title": "2026 年，很可能是 AI 真正「遍地開花」的一年。",
     "tag": "AI 與開發",
-    "image": "keep",
-    "alt": "四張跨年祝福圖卡",
+    "image": "edited",
+    "alt": "圖卡：叉傑克手上的 8 種 AI 分工",
     "dropFirstLine": true,
     "cut": [
       [
@@ -337,7 +337,7 @@
     "title": "買進 0050 誰都會，真正的門檻在後面。",
     "tag": "投資",
     "image": "keep",
-    "alt": "三格漫畫：買進 0050 之後才是真正的考驗",
+    "alt": "四格漫畫：買進 0050 之後才是真正的考驗",
     "dropFirstLine": true,
     "cut": [
       [
@@ -597,7 +597,7 @@
     "id": "104140774603169_1492194812921738",
     "title": "我又休學了！",
     "tag": "人生",
-    "image": "keep",
+    "image": "edited",
     "alt": "叉傑克站在學校櫃台前的背影",
     "dropFirstLine": true,
     "cut": [
@@ -1092,6 +1092,13 @@
         "line": 42,
         "from": "分享給身邊也在跑的朋友吧，",
         "to": ""
+      }
+    ],
+    "link": [
+      {
+        "line": 32,
+        "text": "完整演講",
+        "url": "https://youtu.be/u7dqFaRGMcY"
       }
     ]
   },
