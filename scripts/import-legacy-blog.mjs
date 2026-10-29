@@ -4,6 +4,7 @@
 //   來源：xjack（舊站 xjack.tw）、medium、blogger、biji（運動筆記）
 // 圖片寬度壓到 1400、JPEG 品質 80、PNG 減色，控制 repo 大小
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, copyFileSync, existsSync, rmSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import sharp from 'sharp';
 
@@ -27,6 +28,11 @@ const hidden = {
 };
 const coverFallback = {
   1277: '01.jpg',
+  '9f412d55a572': '02.jpg',
+};
+// 沒有適合當封面的照片：用 scripts/og/cover.mjs 做一張（標題用「|」斷行、分類）
+const madeCover = {
+  df407f858d30: ['親身經歷產後大出血事故|（母女均安）之重點分享', '家庭與桐爸'],
 };
 
 // 同一篇發在好幾個地方：留最早的原文（Blogger）或圖片最完整的版本，其他版本只記在 alsoAt
@@ -36,8 +42,9 @@ const skip = {
 };
 const medium = (hash) => `https://medium.com/p/${hash}`;
 const biji = (id) => `https://running.biji.co/index.php?q=review&act=detail&id=${id}`;
+const fbPage = (id) => `https://www.facebook.com/1468991118575441/posts/${id}`;
 const alsoAt = {
-  'xjack/2022-04-18-1310.md': [medium('354a2e062c4b')],
+  'xjack/2022-04-18-1310.md': [medium('354a2e062c4b'), fbPage('498443208506255')],
   'xjack/2021-12-24-1297.md': [medium('fcf8a79c221f')],
   'xjack/2021-07-17-1277.md': [medium('a6ddba5ef363')],
   'xjack/2021-01-26-1266.md': [medium('e3c6f679131a')],
@@ -49,6 +56,9 @@ const alsoAt = {
   'blogger/2018-09-19-seiko.md': [biji(34646)],
   'blogger/2018-01-31-2018.md': [biji(33122)],
   'medium/2020-01-22-fc6efd06f772.md': [biji(39441)],
+  // 粉專也貼過同一篇（scripts/import-facebook-posts.mjs 就不再搬一次）
+  'medium/2020-12-01-e556c609ce68.md': [fbPage('200640534953192')],
+  'medium/2023-09-22-bfab2519d71e.md': [fbPage('738623624945531')],
 };
 
 // 舊站版本少了的圖說，從同一篇的 Medium 版補回來（XJack 自己寫的原文）
@@ -113,9 +123,8 @@ for (const file of files) {
   if (failedUrls.has(fm.match(/^cover:\s*"?([^"\n]+)"?/m)?.[1])) fm = fm.replace(/^cover:.*\n?/m, '');
   const coverName = fm.match(/cover:\s*"\.\/images\/[^/]+\/([^"]+)"/)?.[1];
   if (coverName && hide.has(coverName)) {
-    fm = coverFallback[key]
-      ? fm.replace(/cover:\s*".*"/, `cover: "./images/${key}/${coverFallback[key]}"`)
-      : fm.replace(/^cover:.*\n?/m, '');
+    const name = coverFallback[key] ?? (madeCover[key] && 'cover.jpg');
+    fm = name ? fm.replace(/cover:\s*".*"/, `cover: "./images/${key}/${name}"`) : fm.replace(/^cover:.*\n?/m, '');
   }
   // 原文網址統一放 originalUrl，方便里程碑把外部連結換成站內文章
   const original = fm.match(/^(?:legacyUrl|mediumUrl|bloggerUrl|bijiUrl|originalUrl):\s*"?([^"\n]+)"?/m)?.[1];
@@ -142,6 +151,12 @@ for (const file of files) {
       else if (/\.webp$/i.test(img)) await pipeline.webp({ quality: 85 }).toFile(path.join(out, img));
       else copyFileSync(input, path.join(out, img));
     }
+  }
+  if (madeCover[key]) {
+    const [title, tag] = madeCover[key];
+    const out = path.join(dest, 'images', key, 'cover.jpg');
+    mkdirSync(path.dirname(out), { recursive: true });
+    execFileSync(process.execPath, ['scripts/og/cover.mjs', out, title, tag, file.slice(0, 10).replaceAll('-', '.')], { stdio: 'ignore' });
   }
   console.log(file, hide.size ? `（拿掉 ${hide.size} 張）` : '');
 }
