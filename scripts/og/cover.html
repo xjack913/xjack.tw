@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+TC:wght@700;900&display=block">
+<style>
+  /* 文章封面 1200×750（16:10，跟文章列表的縮圖同比例）：沒有可用照片的文章才用。
+     node scripts/og/cover.mjs 產生；標題、分類、日期從網址參數帶進來 */
+  html, body { margin: 0; width: 1200px; height: 750px; overflow: hidden; background: #f3f6fa; }
+  body { font-family: 'Noto Sans TC', sans-serif; color: #1e3a5f; position: relative; }
+  .card { position: absolute; inset: 40px 56px 56px 40px; background: #fff; border: 5px solid #1e3a5f; border-radius: 26px; box-shadow: 12px 12px 0 #1e3a5f; overflow: hidden; }
+  .mark { position: absolute; right: -70px; bottom: -90px; width: 560px; height: 560px; }
+  .tag { position: absolute; left: 56px; top: 50px; background: #ffe3d6; color: #8c3410; font-weight: 700; font-size: 28px; padding: 4px 18px; border-radius: 10px; }
+  .box { position: absolute; left: 56px; right: 150px; top: 128px; height: 380px; display: flex; align-items: center; }
+  h1 { margin: 0; font-weight: 900; line-height: 1.28; letter-spacing: 0.01em; text-wrap: balance; }
+  .foot { position: absolute; left: 56px; right: 56px; bottom: 40px; display: flex; justify-content: space-between; align-items: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+  .url { display: flex; align-items: center; gap: 12px; font-size: 40px; }
+  .date { font-size: 36px; color: #3b4d63; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><g fill="#eef2f7"><polygon points="6,6 30,6 94,94 70,94"/><polygon points="11.5,94 20.5,94 32.1,79 23.1,79"/><polygon points="26,73 38.5,73 50.1,58 37.6,58"/><polygon points="48.2,42 64.2,42 75.8,27 59.8,27"/></g><polygon points="62.4,21 82.4,21 94,6 74,6" fill="#ffe3d6"/></svg>
+    <span class="tag" id="tag"></span>
+    <div class="box"><h1 id="title"></h1></div>
+    <div class="foot">
+      <span class="url"><svg width="48" height="48" viewBox="0 0 100 100"><g fill="#1e3a5f"><polygon points="6,6 30,6 94,94 70,94"/><polygon points="11.5,94 20.5,94 32.1,79 23.1,79"/><polygon points="26,73 38.5,73 50.1,58 37.6,58"/><polygon points="48.2,42 64.2,42 75.8,27 59.8,27"/></g><polygon points="62.4,21 82.4,21 94,6 74,6" fill="#ff6b35"/></svg>xjack.tw 冒險日誌</span>
+      <span class="date" id="date"></span>
+    </div>
+  </div>
+  <script>
+    const q = new URLSearchParams(location.search);
+    const h1 = document.getElementById('title');
+    // 「|」是手動斷行（中文自動斷行常把詞切開）；結尾的句號在封面上拿掉
+    for (const [i, line] of (q.get('title') ?? '').replace(/。$/, '').split('|').entries()) {
+      if (i) h1.append(document.createElement('br'));
+      h1.append(line);
+    }
+    document.getElementById('tag').textContent = q.get('tag') ?? '';
+    document.getElementById('date').textContent = q.get('date') ?? '';
+    // 字從 92px 往下縮，直到標題塞進框裡
+    document.fonts.ready.then(() => {
+      const box = h1.parentElement;
+      for (let size = 92; size >= 48; size -= 2) {
+        h1.style.fontSize = `${size}px`;
+        if (h1.scrollHeight <= box.clientHeight && h1.scrollWidth <= box.clientWidth) break;
+      }
+    });
+  </script>
+</body>
+</html>
