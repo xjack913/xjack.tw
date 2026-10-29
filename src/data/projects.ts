@@ -104,7 +104,7 @@ export const projects: Project[] = [
     quality: 'rare',
     summary:
       'Blogger「叉傑克-進化科學跑者之路」、Medium、舊站 xjack.tw 和運動筆記，寫訓練日誌、比賽心得、馬拉松數據和創業。52 篇全部搬進「冒險日誌」。',
-    flavor: '從肥宅進化成跑者的完整攻略。',
+    flavor: '從肥宅到跑完全馬的完整攻略。',
     url: '/blog/',
     urlLabel: '讀冒險日誌',
     // 預覽圖：六篇不同年份舊文章的封面（2014 都蘭、2015 開網誌、2017 初馬、2018 功率計、2020 臺北馬數據、2022 RQ 六歲），沒有桐桐的照片
