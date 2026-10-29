@@ -30,9 +30,12 @@ const coverFallback = {
   1277: '01.jpg',
   '9f412d55a572': '02.jpg',
 };
-// 沒有適合當封面的照片：用 scripts/og/cover.mjs 做一張（標題用「|」斷行、分類）
+// 沒有照片、或沒有適合當封面的照片：用 scripts/og/cover.mjs 做一張（標題用「|」斷行、分類）
 const madeCover = {
-  df407f858d30: ['親身經歷產後大出血事故|（母女均安）之重點分享', '家庭與桐爸'],
+  'medium/2020-11-28-df407f858d30.md': ['親身經歷產後大出血事故|（母女均安）之重點分享', '家庭與桐爸'],
+  'biji/2014-03-19-678.md': ['人生第一場路跑賽！|(五公里)', '比賽心得'],
+  'biji/2014-08-18-984.md': ['曬到不行的|2014都蘭初半馬', '比賽心得'],
+  'blogger/2019-02-02-108c.md': ['【臺北市108年田徑C級教練】|課程筆記摘要', '跑步知識'],
 };
 
 // 同一篇發在好幾個地方：留最早的原文（Blogger）或圖片最完整的版本，其他版本只記在 alsoAt
@@ -121,10 +124,17 @@ for (const file of files) {
 
   let fm = front;
   if (failedUrls.has(fm.match(/^cover:\s*"?([^"\n]+)"?/m)?.[1])) fm = fm.replace(/^cover:.*\n?/m, '');
+  // 做的封面放進這篇的圖片資料夾；沒有圖的文章用檔名裡的代號當資料夾
+  const made = madeCover[`${source}/${file}`];
+  const madeDir = made && (key ?? file.slice(11, -3));
   const coverName = fm.match(/cover:\s*"\.\/images\/[^/]+\/([^"]+)"/)?.[1];
-  if (coverName && hide.has(coverName)) {
-    const name = coverFallback[key] ?? (madeCover[key] && 'cover.jpg');
-    fm = name ? fm.replace(/cover:\s*".*"/, `cover: "./images/${key}/${name}"`) : fm.replace(/^cover:.*\n?/m, '');
+  if (made) {
+    const line = `cover: "./images/${madeDir}/cover.jpg"`;
+    fm = /^cover:/m.test(fm) ? fm.replace(/^cover:[^\r\n]*/m, line) : `${fm}\n${line}`;
+  } else if (coverName && hide.has(coverName)) {
+    fm = coverFallback[key]
+      ? fm.replace(/cover:\s*".*"/, `cover: "./images/${key}/${coverFallback[key]}"`)
+      : fm.replace(/^cover:.*\n?/m, '');
   }
   // 原文網址統一放 originalUrl，方便里程碑把外部連結換成站內文章
   const original = fm.match(/^(?:legacyUrl|mediumUrl|bloggerUrl|bijiUrl|originalUrl):\s*"?([^"\n]+)"?/m)?.[1];
@@ -152,9 +162,9 @@ for (const file of files) {
       else copyFileSync(input, path.join(out, img));
     }
   }
-  if (madeCover[key]) {
-    const [title, tag] = madeCover[key];
-    const out = path.join(dest, 'images', key, 'cover.jpg');
+  if (made) {
+    const [title, tag] = made;
+    const out = path.join(dest, 'images', madeDir, 'cover.jpg');
     mkdirSync(path.dirname(out), { recursive: true });
     execFileSync(process.execPath, ['scripts/og/cover.mjs', out, title, tag, file.slice(0, 10).replaceAll('-', '.')], { stdio: 'ignore' });
   }
