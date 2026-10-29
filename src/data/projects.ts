@@ -36,6 +36,9 @@ export const projects: Project[] = [
     flavor: '當年只是想幫國峰寫個程式算跑力，沒想到寫成一家公司。',
     url: 'https://www.runningquotient.com/',
     urlLabel: '前往 RQ 跑力',
+    // 預覽圖：自己做的圖卡，時間軸五件事都出自 milestones.ts（官網首頁是素材照片配註冊鈕，像廣告所以不用）
+    image: '/images/projects/rq.jpg',
+    imageAlt: 'RQ 跑力圖卡：2013 跑力計算器上線、2016 共同創立、2019 第二代即時跑力、2023 註冊破 10 萬、2026 十週年',
     featured: true,
   },
   {
@@ -104,5 +107,8 @@ export const projects: Project[] = [
     flavor: '從肥宅進化成跑者的完整攻略。',
     url: '/blog/',
     urlLabel: '讀冒險日誌',
+    // 預覽圖：六篇不同年份舊文章的封面（2014 都蘭、2015 開網誌、2017 初馬、2018 功率計、2020 臺北馬數據、2022 RQ 六歲），沒有桐桐的照片
+    image: '/images/projects/blog.jpg',
+    imageAlt: '六篇舊文章的封面：2014 都蘭初半馬、2015 鍵盤上的小貓、2017 初馬完賽、2018 跑步功率計、2020 臺北馬數據圖、2022 RQ 團隊合照',
   },
 ];
