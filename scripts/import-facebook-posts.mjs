@@ -50,8 +50,8 @@ for (const e of edits) {
   if (e.dropFirstLine) drop.add(lines.findIndex((l) => l.trim()));
 
   const kept = lines.filter((l, i) => !drop.has(i) && !hashtagLine(l) && !ruleLine(l));
-  // 網站不能出現的字（舊粉專名、娶嫁、爸爸不想看到的「快 40 年」「殺進殺出」）
-  for (const word of ['不跑步聊數據', '娶', '嫁', '殺進殺出', '快 40 年', '快40年']) {
+  // 網站不能出現的字（娶嫁、爸爸不想看到的「快 40 年」「殺進殺出」）
+  for (const word of ['娶', '嫁', '殺進殺出', '快 40 年', '快40年']) {
     if (kept.some((l) => l.includes(word)) || e.title.includes(word)) throw new Error(`#${e.n} 還有「${word}」`);
   }
 
