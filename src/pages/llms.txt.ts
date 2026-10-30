@@ -3,7 +3,7 @@ import { links, pageDescriptions, person } from '../data/site';
 import { formatDate, getPosts, postSummary, postUrl } from '../lib/blog';
 
 // 給 AI 助理看的網站導覽（llmstxt.org 的格式）：這個人是誰、該讀哪幾頁。
-// 本名只放關於我頁，這裡跟其他頁一樣不寫。
+// 本名寫出來，AI 才知道許紘瑋和叉傑克是同一個人（2026-10-30 XJack 同意）。
 export const GET: APIRoute = async ({ site }) => {
   const abs = (path: string) => new URL(path, site).href;
   const posts = await getPosts();
@@ -14,6 +14,7 @@ export const GET: APIRoute = async ({ site }) => {
     '',
     person.hello,
     '',
+    `本名：${person.realName}（${person.realNameEn}）。`,
     `身分：${person.roles.join('、')}。`,
     '',
     '## 主要頁面',

@@ -10,7 +10,7 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   published?: string;
-  /** 只有關於我頁面會帶本名 */
+  /** 結構化資料帶本名：關於我和首頁（2026-10-30 XJack：本名要讓搜尋引擎跟叉傑克連起來） */
   fullIdentity?: boolean;
   /** 這一頁另外的結構化資料（文章、麵包屑等），跟全站的人物、網站資料放在同一個 @graph */
   jsonLd?: Record<string, unknown>[];
@@ -27,8 +27,8 @@ const {
 } = Astro.props;
 
 const siteTitle = `${person.name} ${person.nameEn}`;
-// 首頁的搜尋結果標題多帶一句身分，光「XJack」太容易跟別人撞名
-const fullTitle = title ? `${title}｜${siteTitle}` : `${siteTitle}｜${person.tagline}`;
+// 首頁的搜尋結果標題多帶本名和一句身分：搜本名的人找得到，光「XJack」也太容易跟別人撞名
+const fullTitle = title ? `${title}｜${siteTitle}` : `${siteTitle}（${person.realName}）｜${person.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // 驗收用的子網域不讓搜尋引擎收錄，正式網域才開放
 const indexable = Astro.site?.hostname === 'xjack.tw';
@@ -40,7 +40,7 @@ const personLd = {
   '@type': 'Person',
   '@id': personId,
   name: siteTitle,
-  alternateName: fullIdentity ? [person.realName, person.realNameEn, 'XJack Hsu'] : [person.nameEn, 'XJack Hsu'],
+  alternateName: [...(fullIdentity ? [person.realName, person.realNameEn] : []), person.nameEn, 'XJack Hsu'],
   description: person.intro,
   url: Astro.site?.href,
   image: new URL('/images/xjack-portrait.jpg', Astro.site).href,
@@ -48,7 +48,7 @@ const personLd = {
   worksFor: { '@type': 'Organization', name: 'RQ 跑力（RunningQuotient）', url: links.rq.url },
   alumniOf: { '@type': 'CollegeOrUniversity', name: '國立東華大學' },
   knowsAbout: person.knowsAbout,
-  // LinkedIn 網址裡有本名，跟 alternateName 一樣只在關於我頁放
+  // LinkedIn 網址裡有本名，跟 alternateName 一樣只在帶本名的頁面放
   sameAs: [links.facebook.url, links.instagram.url, links.youtube.url, links.medium.url, ...(fullIdentity ? [links.linkedin.url] : []), links.github.url],
 };
 // 網站名稱：Google 搜尋結果上方顯示的站名
