@@ -134,4 +134,4 @@ XJack 的個性是樂觀、風趣、愛出去闖、二十年魔獸世界玩家�
 - 首頁「世界頻道」（XJack 2026-10-27 定）：
   - 標題列是網站自己做的：大頭貼、叉傑克 XJack、追蹤粉專按鈕（`src/components/FbPage.astro`）。臉書官方粉專外掛不用：貼文串沒登入看不到（2026-10-27 實測），標題模式也跑版，封面載不出來、追蹤人數被按鈕列壓住（2026-10-28 試 6 種參數都一樣）。
   - 下面三張卡片是精選貼文，挑有代表性、最吸引人、風格和領域都不同的三篇，不是最新三篇；桐桐有真實照片的不選。要換篇就改 `scripts/sync-fb-featured.mjs` 的 `PICKS`，在本機跑 `FB_PAGE_TOKEN=... node scripts/sync-fb-featured.mjs`（或給 `FB_USER_TOKEN`），再 commit `src/data/fb-featured.json` 和 `public/fb-featured/`。
-  - 不用每天自動更新。部署流程也會跑這支，但 repo 沒設 Secret `FB_PAGE_TOKEN` 就直接沿用快照。
+  - 不用每天自動更新，部署流程也不跑這支，直接用 repo 裡的快照。2026-10-30 安全複查後拿掉部署裡的這一步：權杖如果設成 Secret，會跟 npm 套件在同一個 job 執行，任何一個套件被汙染都讀得到。

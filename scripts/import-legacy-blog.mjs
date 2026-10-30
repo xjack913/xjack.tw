@@ -86,6 +86,19 @@ const captions = {
     '05.jpg': '感謝 All Sports 送的照片',
   },
 };
+
+// 這些舊網域已經沒人註冊，誰都能買去放詐騙頁（2026-10-30 安全複查）：有網頁存檔的改連存檔（挑最接近發文日的），
+// 沒有的只留文字。bit.ly/28NN0bx 會轉到 underarmour-runwithfight.com/join.aspx
+const deadLink = /\[([^\]]*)\]\((https?:\/\/(?:[\w-]+\.)*(?:underarmour-runwithfight\.com|myrace\.tw)[^)\s]*|http:\/\/bit\.ly\/28NN0bx)\)/g;
+const archived = {
+  'blogger/2016-06-22-ua-week-6.md':
+    'https://web.archive.org/web/20160616221120/http://www.underarmour-runwithfight.com:80/join.aspx',
+  'blogger/2017-04-24-ua.md': 'https://web.archive.org/web/20170505000821/http://www.underarmour-runwithfight.com:80/',
+  'blogger/2017-06-29-blog-post_29.md':
+    'https://web.archive.org/web/20170610235226/http://www.underarmour-runwithfight.com:80/',
+  'blogger/2017-11-19-15118.md':
+    'https://web.archive.org/web/20191022072240/https://myrace.tw/race/classic/liyumountain',
+};
 const extraHidden = (() => {
   const f = path.join(src, 'hidden.json');
   return existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')) : {};
@@ -132,6 +145,10 @@ for (const file of files) {
   body = body.replace(/!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/g, (all, url) => (failedUrls.has(url) ? lostNote : all));
   // 耐力網的舊網域被別人拿走，現在會轉去賭博網站：拿掉連結，只留文字
   body = body.replace(/\[([^\]]*)\]\(https?:\/\/(?:[\w-]+\.)*center4gaming\.org[^)\s]*\)/g, '$1');
+  body = body.replace(deadLink, (all, text) => {
+    const to = archived[`${source}/${file}`];
+    return to ? `[${text}](${to})` : text;
+  });
 
   let fm = front;
   if (failedUrls.has(fm.match(/^cover:\s*"?([^"\n]+)"?/m)?.[1])) fm = fm.replace(/^cover:.*\n?/m, '');

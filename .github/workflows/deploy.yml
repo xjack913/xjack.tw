@@ -24,11 +24,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: 抓粉專精選貼文
-        # 沒設 FB_PAGE_TOKEN 或臉書出錯都不會讓建置失敗，網站沿用 repo 裡那份
-        run: node scripts/sync-fb-featured.mjs
-        env:
-          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+      # 粉專精選貼文只在本機抓（docs/PLAN.md「世界頻道」）：權杖不進 CI，免得跟 npm 套件跑在同一個 job
       - name: 建置
         run: npm run build
         env:

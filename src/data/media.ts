@@ -77,7 +77,7 @@ export const media: MediaItem[] = [
     kind: '專訪',
     title: 'RQ 跑力品牌形象重塑 演算法新功能再創跑者高峰',
     outlet: '動一動 don1don',
-    url: 'https://www.don1don.com/archives/206098',
+    // 原文 don1don.com/archives/206098：網域已被註冊商停放、可能被別人買走，又沒有網頁存檔，先不放連結（2026-10-30）
   },
   {
     date: '2021-12-13',
@@ -112,7 +112,8 @@ export const media: MediaItem[] = [
     kind: '報導',
     title: 'Garmin 全馬 PB 班：挑戰進步的三大要素',
     outlet: '動一動 don1don',
-    url: 'https://www.don1don.com/archives/83379',
+    // don1don.com 網域已被註冊商停放、可能被別人買走，改連網頁存檔（2026-10-30）
+    url: 'https://web.archive.org/web/20161023053925/http://www.don1don.com:80/archives/83379',
   },
   {
     date: '2016-06-07',

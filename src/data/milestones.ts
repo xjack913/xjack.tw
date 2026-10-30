@@ -273,7 +273,8 @@ export const milestones: Milestone[] = [
     cat: 'rq',
     title: 'Garmin 全馬 PB 班，70 位學員全用 RQ',
     text: '和 Garmin、徐國峰合辦 18 週的全馬 PB 班，我上台介紹 RQ，全班都用 RQ 當分析工具。',
-    link: 'https://www.don1don.com/archives/83379',
+    // don1don.com 網域已被註冊商停放、可能被別人買走，改連網頁存檔（2026-10-30）
+    link: 'https://web.archive.org/web/20161023053925/http://www.don1don.com:80/archives/83379',
     linkLabel: '看報導',
   },
   {
@@ -563,8 +564,7 @@ export const milestones: Milestone[] = [
     title: 'RQ 註冊人數破 10 萬',
     short: '註冊破 10 萬',
     text: 'RQ 七週年前夕，註冊人數突破 10 萬、累積上千萬筆跑步數據；第三版跑力演算法只要跑 200 公尺就能算跑力。',
-    link: 'https://www.don1don.com/archives/206098',
-    linkLabel: '看專訪',
+    // 出處：動一動專訪 don1don.com/archives/206098。網域已被註冊商停放、可能被別人買走，又沒有網頁存檔，先不放連結（2026-10-30）
     lap: true,
   },
   {
