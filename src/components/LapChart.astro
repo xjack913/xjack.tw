@@ -39,6 +39,8 @@ const height = (count: number) => Math.max(10, Math.sqrt(count / max) * 100);
 <style>
   .laps {
     margin: 0;
+    /* 依圖表實際寬度切換橫柱／直柱，不看螢幕寬，字體放大時也會跟著切 */
+    container: laps / inline-size;
   }
 
   /* position: relative 讓念給螢幕閱讀器的隱藏字留在框裡，不然平板寬度整頁會被撐寬、左右捲動 */
@@ -54,9 +56,9 @@ const height = (count: number) => Math.max(10, Math.sqrt(count / max) * 100);
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(var(--n), minmax(4rem, 1fr));
+    /* 每一年平分寬度，不設最小寬：平板上原本要捲動才看得到最近幾年，觸控又沒有捲軸，看起來像被切掉 */
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
     gap: 0.25rem;
-    min-width: calc(var(--n) * 4.25rem);
   }
 
   .hit {
@@ -126,7 +128,8 @@ const height = (count: number) => Math.max(10, Math.sqrt(count / max) * 100);
   }
 
   .year {
-    font-size: 1.45rem;
+    /* 柱子變窄時年份跟著縮，才不會擠到隔壁；最大維持原本大小 */
+    font-size: clamp(1.05rem, 100cqi / var(--n) * 0.33, 1.45rem);
     font-weight: 700;
     line-height: 1;
     color: var(--navy);
@@ -150,8 +153,8 @@ const height = (count: number) => Math.max(10, Math.sqrt(count / max) * 100);
     }
   }
 
-  /* 手機：改成一列一年，柱子橫著長 */
-  @media (max-width: 700px) {
+  /* 手機和直拿的平板：改成一列一年，柱子橫著長 */
+  @container laps (max-width: 48rem) {
     .scroller {
       overflow: visible;
     }
@@ -211,6 +214,7 @@ const height = (count: number) => Math.max(10, Math.sqrt(count / max) * 100);
     .year {
       grid-column: 1;
       grid-row: 1 / span 2;
+      font-size: 1.45rem;
       padding-top: 0;
       align-self: center;
     }
