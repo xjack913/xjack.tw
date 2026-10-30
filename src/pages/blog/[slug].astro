@@ -2,7 +2,7 @@
 import { getImage } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { formatDate, getPosts, postSlug, postUrl, type Post } from '../../lib/blog';
+import { formatDate, getPosts, postSlug, postSummary, postUrl, type Post } from '../../lib/blog';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -24,9 +24,41 @@ const iso = post.data.date.toISOString().slice(0, 10);
 // 分享圖另外轉一張 JPG：直接用封面原檔的話，封面若只在內文被轉成 WebP，原始 JPG 不會輸出，FB／LINE 抓到的是 404
 const cover = post.data.cover;
 const ogImage = cover ? (await getImage({ src: cover, width: Math.min(1200, cover.width), format: 'jpg' })).src : undefined;
+const summary = postSummary(post);
+
+// 文章與麵包屑的結構化資料；作者指回 Base 裡的人物 @id
+const url = new URL(postUrl(post), Astro.site).href;
+const personRef = { '@type': 'Person', '@id': new URL('/#person', Astro.site).href, name: '叉傑克 XJack', url: Astro.site?.href };
+// 舊站文章的原文網址就是這個網域，不算「改寫自別處」
+const original = post.data.originalUrl && !post.data.originalUrl.includes('xjack.tw/') ? post.data.originalUrl : undefined;
+const jsonLd = [
+  {
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    headline: post.data.title,
+    description: summary,
+    datePublished: iso,
+    inLanguage: 'zh-Hant-TW',
+    url,
+    mainEntityOfPage: url,
+    image: new URL(ogImage ?? '/og.jpg', Astro.site).href,
+    author: personRef,
+    publisher: personRef,
+    ...(post.data.tags.length && { keywords: post.data.tags.join(', ') }),
+    ...(original && { isBasedOn: original }),
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '首頁', item: Astro.site?.href },
+      { '@type': 'ListItem', position: 2, name: '冒險日誌', item: new URL('/blog/', Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: post.data.title },
+    ],
+  },
+];
 ---
 
-<Base title={post.data.title} description={post.data.excerpt} type="article" published={iso} image={ogImage}>
+<Base title={post.data.title} description={summary} type="article" published={iso} image={ogImage} jsonLd={jsonLd}>
   <article class="section">
     <div class="wrap">
       <header class="head read">

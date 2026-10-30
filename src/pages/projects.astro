@@ -2,9 +2,10 @@
 import Base from '../layouts/Base.astro';
 import ProjectRow from '../components/ProjectRow.astro';
 import { projects } from '../data/projects';
+import { pageDescriptions } from '../data/site';
 ---
 
-<Base title="裝備" description="叉傑克 XJack 做出來的東西：RQ 跑力、跟岳母的十年之約、桐桐貓貓島、桐爸日記與更多。">
+<Base title="裝備" description={pageDescriptions.projects}>
   <section class="section">
     <div class="wrap">
       <header class="page-head read">

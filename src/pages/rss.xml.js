@@ -1,5 +1,5 @@
 import rss from '@astrojs/rss';
-import { getPosts, postUrl } from '../lib/blog';
+import { getPosts, postSummary, postUrl } from '../lib/blog';
 
 export async function GET(context) {
   const posts = await getPosts();
@@ -10,7 +10,7 @@ export async function GET(context) {
     items: posts.map((post) => ({
       title: post.data.title,
       pubDate: post.data.date,
-      description: post.data.excerpt,
+      description: postSummary(post),
       link: postUrl(post),
     })),
     customData: '<language>zh-TW</language>',

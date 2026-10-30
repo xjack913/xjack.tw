@@ -7,6 +7,10 @@ export const person = {
   realNameEn: 'Hung-Wei Hsu',
   // 粉專簡介原文（XJack 自己寫的）；「臺科大資工博士生」2026-06-20 休學後拿掉。分享預覽、搜尋結果用這句
   intro: '工程師出身的 RQ 創辦人、桐桐爸爸、遊戲玩家，也是跑步科學訓練的推廣者。',
+  // 首頁在搜尋結果的標題：「叉傑克 XJack｜RQ 跑力創辦人、桐爸」
+  tagline: 'RQ 跑力創辦人、桐爸',
+  // 結構化資料的 knowsAbout：讓搜尋引擎和 AI 知道可以拿哪些主題來問他
+  knowsAbout: ['跑步科學化訓練', '跑力', '馬拉松訓練', '運動數據分析', '軟體開發', '新創經營'],
   motto: '我相信生命的每一秒都有意義。',
   // 個人品牌的底層信念：跑步訓練和指數投資都是「時間 × 複利 × 紀律」
   belief: '最好 20 年前開始；第二好的開始時間，就是現在。',
@@ -50,6 +54,13 @@ export const links = {
 
 // GA4：XJack 個人 Google 帳號下獨立的「叉傑克 XJack 個人網站」資源（2026-10-29 建，跟貓貓島分開）
 export const analyticsId = 'G-5XDRZB704V';
+
+// 各頁在搜尋結果的描述；llms.txt 也用同一句
+export const pageDescriptions = {
+  timeline: '叉傑克 XJack 從東華新手村、創立 RQ 跑力、當上桐爸到今天解鎖的每一個成就。',
+  projects: '叉傑克 XJack 做出來的東西：RQ 跑力、跟岳母的十年之約、桐桐貓貓島、桐爸日記與更多。',
+  blog: '叉傑克 XJack 十年來寫的訓練日誌、比賽心得、馬拉松數據分析、創業、育兒與投資文章。',
+};
 
 // 選單：遊戲角色檔案的說法，第一次來的人也看得懂
 export const nav = [

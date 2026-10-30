@@ -5,6 +5,7 @@ import AchIcon from '../components/AchIcon.astro';
 import { achievementStats, byYear, categories, formatMilestoneDate, pointsOf } from '../lib/milestones';
 import type { MilestoneCategory } from '../data/milestones';
 import { legacyLinkMap } from '../lib/blog';
+import { pageDescriptions } from '../data/site';
 
 const years = [...byYear().entries()];
 const stats = achievementStats();
@@ -14,7 +15,7 @@ const filters = Object.entries(categories).filter(([k]) => used.has(k as Milesto
 const resolve = await legacyLinkMap();
 ---
 
-<Base title="成就" description="叉傑克 XJack 從東華新手村、創立 RQ 跑力、當上桐爸到今天解鎖的每一個成就。">
+<Base title="成就" description={pageDescriptions.timeline}>
   <section class="section">
     <div class="wrap">
       <header class="page-head">

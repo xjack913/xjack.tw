@@ -32,5 +32,30 @@ export async function legacyLinkMap() {
   return (url?: string) => (url ? (map.get(normalize(url)) ?? url) : url);
 }
 
+/**
+ * 搜尋結果和 RSS 用的摘要。舊文章的 excerpt 常常只有一句（中位數 43 字），
+ * 太短時從內文裡 excerpt 那句接著往下取，只用原文的字、不改寫，最多 120 字。
+ */
+export function postSummary(post: Post, max = 120) {
+  const excerpt = post.data.excerpt ?? '';
+  if ([...excerpt].length >= 70) return excerpt;
+  const text = (post.body ?? '')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/<[^>]+>/g, '')
+    .replace(/^\s{0,3}(#{1,6}|>|[-*+]|\d+\.)\s+/gm, '')
+    .replace(/(\*\*|__|~~|`)/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  // 從 excerpt 那句開始接，跳過開頭的影片連結、圖說這類不是正文的字
+  const from = excerpt ? text.indexOf(excerpt.replace(/\s+/g, ' ').trim().slice(0, 12)) : -1;
+  const chars = [...(from > 0 ? text.slice(from) : text)];
+  if (chars.length <= max) return chars.join('') || excerpt;
+  const head = chars.slice(0, max).join('');
+  // 盡量停在句尾；第 60 字之後都沒有句尾才硬切
+  const end = Math.max(...['。', '！', '？', '!', '?', '～', '~'].map((p) => head.lastIndexOf(p)));
+  return end >= 60 ? head.slice(0, end + 1) : `${chars.slice(0, max - 1).join('')}…`;
+}
+
 export const formatDate = (d: Date) =>
   `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;

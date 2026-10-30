@@ -7,12 +7,19 @@ import { media } from '../data/media';
 import { education, publications, patents } from '../data/academic';
 
 const contactLinks = [links.facebook, links.instagram, links.youtube, links.medium, links.linkedin, links.github];
+// 個人簡介頁：告訴搜尋引擎這一頁的主角就是 Base 裡的那個人
+const profileLd = {
+  '@type': 'ProfilePage',
+  url: new URL('/about/', Astro.site).href,
+  mainEntity: { '@id': new URL('/#person', Astro.site).href },
+};
 ---
 
 <Base
   title="角色檔案"
   fullIdentity
   description={`${person.name} ${person.nameEn}（本名${person.realName}）：${person.intro}`}
+  jsonLd={[profileLd]}
 >
   <section class="section band">
     <div class="wrap">

@@ -46,3 +46,17 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+      # 通知 Bing 等支援 IndexNow 的搜尋引擎來抓網站地圖裡的網址（ChatGPT 搜尋、Copilot 用的是 Bing 的索引）。
+      # 金鑰本來就要公開放在網站上（public/<金鑰>.txt），不是祕密；只在正式網域跑，失敗也不擋部署。
+      - name: 通知 IndexNow
+        if: vars.SITE_URL == 'https://xjack.tw'
+        continue-on-error: true
+        env:
+          INDEXNOW_KEY: e3d1fe02559f53425bc8a4db0fd93f33
+        run: |
+          urls=$(curl -fsS https://xjack.tw/sitemap-index.xml | grep -o '<loc>[^<]*' | sed 's/<loc>//' \
+            | xargs -n1 curl -fsS | grep -o '<loc>[^<]*' | sed 's/<loc>//' | jq -R . | jq -sc .)
+          jq -n --arg key "$INDEXNOW_KEY" --argjson urls "$urls" \
+            '{host: "xjack.tw", key: $key, keyLocation: ("https://xjack.tw/" + $key + ".txt"), urlList: $urls}' \
+            | curl -sS -X POST https://api.indexnow.org/indexnow -H 'Content-Type: application/json; charset=utf-8' \
+              --data-binary @- -o /dev/null -w 'IndexNow 回應 %{http_code}\n'

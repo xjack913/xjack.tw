@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import PostList from '../../components/PostList.astro';
 import { getPosts } from '../../lib/blog';
-import { links } from '../../data/site';
+import { links, pageDescriptions } from '../../data/site';
 
 const posts = await getPosts();
 // 粉專長文另外講，其他是以前的部落格
@@ -15,7 +15,7 @@ for (const p of posts) {
 }
 ---
 
-<Base title="冒險日誌" description="叉傑克 XJack 十年來寫的訓練日誌、比賽心得、馬拉松數據分析、創業、育兒與投資文章。">
+<Base title="冒險日誌" description={pageDescriptions.blog}>
   <section class="section">
     <div class="wrap">
       <header class="page-head read">
