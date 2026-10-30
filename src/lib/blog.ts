@@ -11,6 +11,38 @@ export async function getPosts() {
   return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }
 
+// ── 主題頁：文章數夠多的標籤才開一頁，太少的頁面對讀者和搜尋都沒用 ──
+const TOPIC_MIN_POSTS = 4;
+
+export const tagSlug = (tag: string) => tag.trim().replace(/\s+/g, '-');
+
+export const tagUrl = (tag: string) => `/blog/tag/${tagSlug(tag)}/`;
+
+/** 有主題頁的標籤，文章多的排前面 */
+export function topicTags(posts: Post[]) {
+  const map = new Map<string, Post[]>();
+  for (const post of posts) {
+    for (const tag of post.data.tags) map.set(tag, [...(map.get(tag) ?? []), post]);
+  }
+  return [...map]
+    .filter(([, list]) => list.length >= TOPIC_MIN_POSTS)
+    .sort((a, b) => b[1].length - a[1].length)
+    .map(([tag, list]) => ({ tag, posts: list }));
+}
+
+/** 相關文章：共同標籤越多越前面，一樣多就挑日期近的 */
+export function relatedPosts(post: Post, posts: Post[], count = 3) {
+  const tags = new Set(post.data.tags);
+  const gap = (p: Post) => Math.abs(p.data.date.valueOf() - post.data.date.valueOf());
+  return posts
+    .filter((p) => p.id !== post.id)
+    .map((p) => ({ p, shared: p.data.tags.filter((t) => tags.has(t)).length }))
+    .filter((x) => x.shared > 0)
+    .sort((a, b) => b.shared - a.shared || gap(a.p) - gap(b.p))
+    .slice(0, count)
+    .map((x) => x.p);
+}
+
 const normalize = (url: string) => {
   try {
     const u = new URL(url);

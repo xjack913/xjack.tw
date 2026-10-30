@@ -1,0 +1,88 @@
+---
+// 冒險日誌的主題頁：同一個標籤的文章收在一起，標籤要有 4 篇以上才開頁
+import Base from '../../../layouts/Base.astro';
+import PostList from '../../../components/PostList.astro';
+import TopicLinks from '../../../components/TopicLinks.astro';
+import { getPosts, tagSlug, tagUrl, topicTags, type Post } from '../../../lib/blog';
+
+export async function getStaticPaths() {
+  const topics = topicTags(await getPosts());
+  const allTags = topics.map((t) => t.tag);
+  return topics.map(({ tag, posts }) => ({ params: { tag: tagSlug(tag) }, props: { tag, posts, allTags } }));
+}
+
+interface Props {
+  tag: string;
+  posts: Post[];
+  allTags: string[];
+}
+
+const { tag, posts, allTags } = Astro.props;
+const description = `叉傑克 XJack 寫的「${tag}」文章，共 ${posts.length} 篇，包括${posts
+  .slice(0, 2)
+  .map((p) => `〈${p.data.title}〉`)
+  .join('')}。`;
+const url = new URL(tagUrl(tag), Astro.site).href;
+const jsonLd = [
+  {
+    '@type': 'CollectionPage',
+    '@id': url,
+    name: `${tag}｜冒險日誌`,
+    description,
+    url,
+    inLanguage: 'zh-Hant-TW',
+    isPartOf: { '@id': new URL('/#website', Astro.site).href },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '首頁', item: Astro.site?.href },
+      { '@type': 'ListItem', position: 2, name: '冒險日誌', item: new URL('/blog/', Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: tag },
+    ],
+  },
+];
+---
+
+<Base title={`${tag}｜冒險日誌`} description={description} jsonLd={jsonLd}>
+  <section class="section">
+    <div class="wrap">
+      <header class="page-head read">
+        <p class="crumb"><a href="/blog/">冒險日誌</a></p>
+        <h1>{tag}</h1>
+        <p class="muted">標記「{tag}」的冒險日誌，一共 <span class="num">{posts.length}</span> 篇，新的在前面。</p>
+      </header>
+      <PostList posts={posts} />
+      <footer class="others">
+        <h2>其他主題</h2>
+        <TopicLinks tags={allTags} current={tag} />
+      </footer>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .page-head {
+    margin-bottom: 2rem;
+  }
+
+  .crumb {
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+  }
+
+  .page-head h1 {
+    margin-bottom: 0.6rem;
+  }
+
+  .others {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .others h2 {
+    font-size: var(--step-1);
+    margin-bottom: 1rem;
+  }
+</style>

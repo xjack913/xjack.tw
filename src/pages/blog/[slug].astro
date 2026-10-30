@@ -2,13 +2,23 @@
 import { getImage } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { formatDate, getPosts, postSlug, postSummary, postUrl, type Post } from '../../lib/blog';
+import PostList from '../../components/PostList.astro';
+import TopicLinks from '../../components/TopicLinks.astro';
+import { formatDate, getPosts, postSlug, postSummary, postUrl, relatedPosts, topicTags, type Post } from '../../lib/blog';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
+  const topics = new Set(topicTags(posts).map((t) => t.tag));
   return posts.map((post, i) => ({
     params: { slug: postSlug(post) },
-    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+    props: {
+      post,
+      newer: posts[i - 1],
+      older: posts[i + 1],
+      related: relatedPosts(post, posts),
+      // 只列有主題頁的標籤，點了才有東西看
+      topics: post.data.tags.filter((t) => topics.has(t)),
+    },
   }));
 }
 
@@ -16,9 +26,11 @@ interface Props {
   post: Post;
   newer?: Post;
   older?: Post;
+  related: Post[];
+  topics: string[];
 }
 
-const { post, newer, older } = Astro.props;
+const { post, newer, older, related, topics } = Astro.props;
 const { Content } = await render(post);
 const iso = post.data.date.toISOString().slice(0, 10);
 // 分享圖另外轉一張 JPG：直接用封面原檔的話，封面若只在內文被轉成 WebP，原始 JPG 不會輸出，FB／LINE 抓到的是 404
@@ -85,6 +97,24 @@ const jsonLd = [
       <div class="prose">
         <Content />
       </div>
+      {
+        (topics.length > 0 || related.length > 0) && (
+          <aside class="more read" aria-label="延伸閱讀">
+            {topics.length > 0 && (
+              <div>
+                <h2>主題</h2>
+                <TopicLinks tags={topics} label="這篇文章的主題" />
+              </div>
+            )}
+            {related.length > 0 && (
+              <div>
+                <h2>相關的冒險日誌</h2>
+                <PostList posts={related} compact />
+              </div>
+            )}
+          </aside>
+        )
+      }
       <nav class="pager read" aria-label="上一篇與下一篇">
         {
           older ? (
@@ -113,8 +143,26 @@ const jsonLd = [
   /* 閱讀欄比 .wrap 窄，置中才不會在寬螢幕上貼左邊、右邊空一大塊 */
   .head,
   .prose,
+  .more,
   .pager {
     margin-inline: auto;
+  }
+
+  .more {
+    display: grid;
+    gap: 2rem;
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .more h2 {
+    font-size: var(--step-1);
+    margin-bottom: 0.8rem;
+  }
+
+  .more + .pager {
+    margin-top: 2.5rem;
   }
 
   .head {

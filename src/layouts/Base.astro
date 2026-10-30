@@ -45,7 +45,8 @@ const personLd = {
   url: Astro.site?.href,
   image: new URL('/images/xjack-portrait.jpg', Astro.site).href,
   jobTitle: 'RQ 跑力共同創辦人暨執行長',
-  worksFor: { '@type': 'Organization', name: 'RQ 跑力（RunningQuotient）', url: links.rq.url },
+  // @id 跟 RQ 官網首頁的 Organization 一樣，兩邊的結構化資料才接得起來
+  worksFor: { '@type': 'Organization', '@id': 'https://www.runningquotient.com#organization', name: 'RQ 跑力（RunningQuotient）', url: links.rq.url },
   alumniOf: { '@type': 'CollegeOrUniversity', name: '國立東華大學' },
   knowsAbout: person.knowsAbout,
   // LinkedIn 網址裡有本名，跟 alternateName 一樣只在帶本名的頁面放
@@ -73,7 +74,8 @@ const graph = { '@context': 'https://schema.org', '@graph': [personLd, websiteLd
     <meta name="description" content={description} />
     <meta name="author" content={siteTitle} />
     <link rel="canonical" href={canonical} />
-    {!indexable && <meta name="robots" content="noindex, nofollow" />}
+    {/* 正式網域允許搜尋結果和 Discover 用大圖顯示 */}
+    <meta name="robots" content={indexable ? 'max-image-preview:large' : 'noindex, nofollow'} />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

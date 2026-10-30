@@ -1,0 +1,54 @@
+---
+// 冒險日誌的主題連結：外觀跟成就頁的分類按鈕一樣，但這裡是連到主題頁的一般連結
+import { tagUrl } from '../lib/blog';
+
+interface Props {
+  tags: string[];
+  /** 目前所在的主題頁，標成目前位置 */
+  current?: string;
+  label?: string;
+}
+const { tags, current, label = '冒險日誌的主題' } = Astro.props;
+---
+
+<nav class="topics" aria-label={label}>
+  {
+    tags.map((tag) => (
+      <a href={tagUrl(tag)} aria-current={tag === current ? 'page' : undefined}>
+        {tag}
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.3rem 1rem;
+    font-size: var(--step--1);
+    font-weight: 700;
+    color: var(--navy);
+    background: var(--paper);
+    border: 2px solid var(--navy);
+    border-radius: 8px;
+    text-decoration: none;
+  }
+
+  a:hover {
+    background: var(--mist);
+  }
+
+  a[aria-current='page'] {
+    color: #fff;
+    background: var(--navy);
+    box-shadow: 3px 3px 0 var(--orange);
+  }
+</style>
