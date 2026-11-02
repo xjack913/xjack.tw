@@ -1,16 +1,21 @@
 // 把粉專長文搬進 src/content/blog/facebook/。
 // 文字照原文，只做 scripts/facebook-edits.json 列的修改：刪掉只在臉書成立的句子（連結放留言、報名、hashtag）、
 // 隱私與用字調整。原文的空行分段、單一換行保留成換行。
-// 用法：node scripts/import-facebook-posts.mjs <備份資料夾>
-//   備份資料夾：page-all.json（Graph API 抓的全部貼文）、img/NNN.jpg（原圖）、img-edit/NNN.jpg（處理過的圖）
-//   NNN 是 facebook-edits.json 的 n（粉專 500 字以上長文依日期排的編號）
-import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'node:fs';
+// 用法：node scripts/import-facebook-posts.mjs <備份資料夾> [--rebuild]
+//   備份資料夾：page-all.json（Graph API 抓的貼文）、img/NNN.jpg（原圖）、img-edit/NNN.jpg（處理過的圖）
+//   NNN 是 facebook-edits.json 的 n（2026-10-29 第一批：粉專 500 字以上長文依日期排的編號）；
+//   之後加的沒有 n，圖檔用貼文編號底線後那段命名（img/1620725693401982.jpg）。備份資料夾用 scripts/fetch-facebook-posts.mjs 抓。
+// 網站上已經有的貼文不重做，舊文以 repo 裡的檔案為準，備份資料夾只要放這次新加的。
+// --rebuild 才整批刪掉重做，備份資料夾要有全部貼文和原圖。
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 import sharp from 'sharp';
 
-const [src] = process.argv.slice(2);
-if (!src) throw new Error('用法：node scripts/import-facebook-posts.mjs <備份資料夾>');
+const args = process.argv.slice(2);
+const rebuild = args.includes('--rebuild');
+const [src] = args.filter((a) => !a.startsWith('--'));
+if (!src) throw new Error('用法：node scripts/import-facebook-posts.mjs <備份資料夾> [--rebuild]');
 const dest = path.resolve('src/content/blog/facebook');
 const origin = '叉傑克 XJack 粉專';
 
@@ -37,22 +42,28 @@ const LINK = '\u0002';
 const hashtagLine = (l) => /^\s*(#\S+\s*)+$/.test(l);
 const ruleLine = (l) => /^\s*[-—–_]+\s*$/.test(l);
 
-rmSync(dest, { recursive: true, force: true });
+if (rebuild) rmSync(dest, { recursive: true, force: true });
 mkdirSync(dest, { recursive: true });
+// 檔名是「日期-貼文編號.md」，日期固定 10 字加一個連字號
+const done = new Set(readdirSync(dest).filter((f) => f.endsWith('.md')).map((f) => f.slice(11, -3)));
 
+let added = 0;
 for (const e of edits) {
+  const key = e.id.split('_').pop();
+  if (done.has(key)) continue;
+  const label = `#${e.n ?? key}`;
   const post = byId.get(e.id);
-  if (!post) throw new Error(`找不到貼文 #${e.n} ${e.id}`);
+  if (!post) throw new Error(`找不到貼文 ${label} ${e.id}`);
   const lines = post.message.split('\n');
 
   for (const r of e.replace) {
     const i = r.line - 1;
-    if (!lines[i]?.includes(r.from)) throw new Error(`#${e.n} 第 ${r.line} 行沒有「${r.from}」`);
+    if (!lines[i]?.includes(r.from)) throw new Error(`${label} 第 ${r.line} 行沒有「${r.from}」`);
     lines[i] = lines[i].replace(r.from, r.to);
   }
   for (const [k, r] of (e.link ?? []).entries()) {
     const i = r.line - 1;
-    if (!lines[i]?.includes(r.text)) throw new Error(`#${e.n} 第 ${r.line} 行沒有「${r.text}」`);
+    if (!lines[i]?.includes(r.text)) throw new Error(`${label} 第 ${r.line} 行沒有「${r.text}」`);
     lines[i] = lines[i].replace(r.text, `${LINK}${k}${LINK}`);
   }
   const drop = new Set();
@@ -63,7 +74,7 @@ for (const e of edits) {
   const kept = lines.flatMap((l, i) => (drop.has(i) || hashtagLine(l) ? [] : ruleLine(l) ? [''] : [l]));
   // 網站不能出現的字（娶嫁、爸爸不想看到的「快 40 年」「殺進殺出」）
   for (const word of ['娶', '嫁', '殺進殺出', '快 40 年', '快40年']) {
-    if (kept.some((l) => l.includes(word)) || e.title.includes(word)) throw new Error(`#${e.n} 還有「${word}」`);
+    if (kept.some((l) => l.includes(word)) || e.title.includes(word)) throw new Error(`${label} 還有「${word}」`);
   }
 
   // 空行分段；段內的換行用反斜線硬換行保留
@@ -83,7 +94,6 @@ for (const e of edits) {
   const excerpt = flat.length > 80 ? `${flat.slice(0, 80)}…` : flat;
 
   const date = tpe(post.created_time);
-  const key = post.id.split('_').pop();
   const imgDir = path.join(dest, 'images', key);
   mkdirSync(imgDir, { recursive: true });
 
@@ -92,7 +102,7 @@ for (const e of edits) {
   if (e.image === 'hidden') {
     head.push('<p class="photo-removed">（這裡原本有一張桐桐露臉的照片，為了保護她的隱私，搬家時先拿掉了。）</p>');
   } else {
-    const file = path.join(src, e.image === 'edited' ? 'img-edit' : 'img', `${String(e.n).padStart(3, '0')}.jpg`);
+    const file = path.join(src, e.image === 'edited' ? 'img-edit' : 'img', `${e.n ? String(e.n).padStart(3, '0') : key}.jpg`);
     await sharp(file).resize({ width: 1400, withoutEnlargement: true }).jpeg({ quality: 80, mozjpeg: true }).toFile(path.join(imgDir, '01.jpg'));
     head.push(`![${e.alt}](./images/${key}/01.jpg)`);
     cover = `./images/${key}/01.jpg`;
@@ -119,6 +129,7 @@ for (const e of edits) {
     '---',
   ];
   writeFileSync(path.join(dest, `${date}-${key}.md`), `${front.join('\n')}\n\n${head.join('\n\n')}\n\n${body}\n`, 'utf8');
-  console.log(`#${e.n}`, date, e.title);
+  console.log(label, date, e.title);
+  added++;
 }
-console.log(`共 ${edits.length} 篇`);
+console.log(`新增 ${added} 篇，網站上原本就有的 ${edits.length - added} 篇沒動`);
