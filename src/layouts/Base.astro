@@ -14,6 +14,8 @@ interface Props {
   fullIdentity?: boolean;
   /** 這一頁另外的結構化資料（文章、麵包屑等），跟全站的人物、網站資料放在同一個 @graph */
   jsonLd?: Record<string, unknown>[];
+  /** 不放頁首頁尾，整個畫面給內容（桐爸日記連續閱讀） */
+  bare?: boolean;
 }
 
 const {
@@ -24,6 +26,7 @@ const {
   published,
   fullIdentity = false,
   jsonLd = [],
+  bare = false,
 } = Astro.props;
 
 const siteTitle = `${person.name} ${person.nameEn}`;
@@ -121,10 +124,10 @@ const graph = { '@context': 'https://schema.org', '@graph': [personLd, websiteLd
   </head>
   <body>
     <a class="skip-link" href="#main">跳到主要內容</a>
-    <Header />
+    {!bare && <Header />}
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    {!bare && <Footer />}
   </body>
 </html>

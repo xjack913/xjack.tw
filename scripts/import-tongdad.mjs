@@ -25,9 +25,17 @@ const score = (topic, p) =>
   [...new Set(norm(topic))].filter((c) => norm((p.message ?? '').split('\n').slice(0, 3).join('')).includes(c)).length +
   (p.message?.includes('#桐爸日記') ? 2 : 0);
 
-// XJack 決定只放冒險日誌、不進漫畫區的貼文（貼文編號底線後那段）
-// 2026-11-02〈從開團到開公司〉下集：有標 #桐爸日記，但講的是魔獸戰友創業，跟上集一起放冒險日誌
-const blogOnly = new Set(['1453616180112935']);
+// XJack 決定不進漫畫區的貼文（貼文編號底線後那段）→ 原因。
+// 網址照樣先排好才跳過，同一天其他張的網址才不會變（例如 260130 跳過，260130-2 還是 260130-2）
+const skip = new Map([
+  ['1453616180112935', '〈從開團到開公司〉下集：有標 #桐爸日記，但講的是魔獸戰友創業，跟上集一起放冒險日誌（2026-11-02）'],
+  // 2026-11-02 XJack：只有單格的不放漫畫區（單張插畫、節日賀圖）
+  ['1361802815960939', '單格〈真正要訓練的，從來不是孩子，是爸媽。〉'],
+  ['1369505361857351', '單格〈停車風險控管升級成親子互動功能。〉'],
+  ['1371642138310340', '單格〈路過飲料店時，家裡真正的營養顧問會自動上線。〉'],
+  ['1553364050138147', '單格〈我今天的產出是蓮花〉'],
+  ['1584255123715706', '單格〈中秋節快樂〉'],
+]);
 
 const files = readdirSync(src)
   .filter((f) => /^\d{6}_.+\.(jpe?g|png|webp)$/i.test(f))
@@ -50,7 +58,6 @@ for (const file of files) {
     continue;
   }
   used.add(best.p.post_id);
-  if (blogOnly.has(best.p.post_id.split('_').pop())) continue;
   matched.push({ file, yymmdd, topic, day, post: best.p });
 }
 
@@ -64,8 +71,9 @@ for (const m of matched) {
 }
 
 const done = new Set(readdirSync(dest).filter((f) => f.endsWith('.md')).map((f) => f.slice(0, -3)));
+const kept = matched.filter((m) => !skip.has(m.post.post_id.split('_').pop()));
 let added = 0;
-for (const { file, topic, day, post, slug } of matched) {
+for (const { file, topic, day, post, slug } of kept) {
   if (done.has(slug)) continue;
   const lines = (post.message ?? '').split('\n');
   const first = lines.findIndex((l) => l.trim());
@@ -101,5 +109,5 @@ for (const { file, topic, day, post, slug } of matched) {
   console.log(slug, title);
 }
 
-console.log(`新增 ${added} 張，原本就有的 ${matched.length - added} 張沒動`);
+console.log(`新增 ${added} 張，原本就有的 ${kept.length - added} 張沒動，照 skip 跳過 ${matched.length - kept.length} 張`);
 if (missing.length) console.log(`對不到貼文、沒收（要人看過）：\n  ${missing.join('\n  ')}`);

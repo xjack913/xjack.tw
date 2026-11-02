@@ -1,16 +1,16 @@
 ---
-// 連續閱讀：所有漫畫照發表順序排成一長條，從第 1 話一路往下捲。
-// 圖片捲到附近才載入；貼文文字先收起來，不打斷看漫畫的節奏。
-// 這台裝置看到哪一話記在瀏覽器裡，列表頁的「接著上次看」讀同一筆。
+// 連續閱讀：像看漫畫一樣一頁一話，左右滑（或點畫面左右邊、方向鍵）翻到上一話、下一話。
+// 2026-11-02 XJack 看過直向捲動版，覺得每話之間的標題、日期、文字中斷感太重，改成翻頁式；
+// 貼文文字也不放（他：「就是不要有爸爸的話」），要看文字到單篇頁。
+// 網址會跟著換成目前這一話（#網址），看到哪一話也記在瀏覽器裡，列表頁的「接著上次看」讀同一筆。
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import { links } from '../../data/site';
-import { formatDate, getPosts, postUrl } from '../../lib/blog';
-import { comicUrl, getEpisodes, paragraphs } from '../../lib/tongdad';
+import { getEpisodes } from '../../lib/tongdad';
 
 const episodes = await getEpisodes();
-const posts = await getPosts();
-const last = episodes.at(-1)!;
+const total = episodes.length;
+const [first] = episodes;
 
 const jsonLd = [
   {
@@ -24,207 +24,240 @@ const jsonLd = [
 ];
 ---
 
-<Base title="連續閱讀｜桐爸日記" description="桐爸日記漫畫從第 1 話開始，照發表順序一話接一話看下去。" jsonLd={jsonLd}>
-  <section class="section">
-    <div class="wrap">
-      <header class="page-head read">
-        <p class="crumb"><a href="/tongdad/">桐爸日記</a></p>
-        <h1>連續閱讀</h1>
-        <p class="muted">
-          從第 1 話開始照發表順序排，往下捲就是下一話，目前一共 <span class="num">{episodes.length}</span> 話。每一話底下可以打開爸爸當天寫的貼文。
-        </p>
-      </header>
-      <ol class="episodes">
-        {
-          episodes.map(({ comic, no }, i) => {
-            const { title, date, image, alt, text, originalUrl } = comic.data;
-            const paras = paragraphs(text);
-            // 同一篇貼文也收進冒險日誌的（長文），只放開頭，全文連過去
-            const article = posts.find((p) => p.data.originalUrl === originalUrl);
-            const shown = article ? paras.slice(0, 2) : paras;
-            return (
-              <li class="episode" id={comic.id} data-no={no}>
-                <header class="ep-head read">
-                  <p class="ep-no">
-                    第 <span class="num">{no}</span> 話
-                  </p>
-                  <h2>{title}</h2>
-                  <p class="meta">
-                    <time class="num" datetime={date.toISOString().slice(0, 10)}>
-                      {formatDate(date)}
-                    </time>
-                    <a href={comicUrl(comic)}>單獨打開這一話</a>
-                  </p>
-                </header>
-                <figure class="comic">
-                  <Image
-                    src={image}
-                    alt={alt}
-                    widths={[720, 1080, Math.min(1400, image.width)]}
-                    sizes="(min-width: 760px) 720px, 100vw"
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                  />
-                </figure>
-                {shown.length > 0 && (
-                  <details class="story read">
-                    <summary>看爸爸當天寫的</summary>
-                    <div class="prose">
-                      {shown.map((p) => <p>{p.map((l, j) => (j ? [<br />, l] : l))}</p>)}
-                      {article && (
-                        <p class="full">
-                          全文收在冒險日誌：<a href={postUrl(article)}>〈{article.data.title}〉</a>
-                        </p>
-                      )}
-                    </div>
-                  </details>
-                )}
-              </li>
-            );
-          })
-        }
-      </ol>
-      <footer class="end read">
-        <p class="end-title">目前就到第 <span class="num">{last.no}</span> 話</p>
-        <p class="muted">
-          新的一話每週一、四先在{' '}
-          <a href={links.facebook.url} rel="noopener" target="_blank">Facebook 粉絲專頁</a>連載。
-        </p>
-        <p><a class="btn ghost" href="/tongdad/">回到桐爸日記</a></p>
-      </footer>
-    </div>
-  </section>
+<Base title="連續閱讀｜桐爸日記" description="桐爸日記漫畫從第 1 話開始，一頁一話翻下去。" jsonLd={jsonLd} bare>
+  <div class="reader">
+    <header class="bar top">
+      <a class="back" href="/tongdad/">桐爸日記</a>
+      <p class="now" aria-live="polite">
+        <span class="now-no">第 <span class="num">1</span> 話</span>
+        <span class="now-title">{first.comic.data.title}</span>
+      </p>
+      <span class="count num"><span class="count-no">1</span> / {total}</span>
+    </header>
+
+    <ol class="pages" aria-label="桐爸日記漫畫，左右滑動翻頁">
+      {
+        episodes.map(({ comic, no }, i) => (
+          <li class="page" id={comic.id} data-no={no} data-title={comic.data.title} aria-label={`第 ${no} 話：${comic.data.title}`}>
+            <Image
+              src={comic.data.image}
+              alt={comic.data.alt}
+              widths={[720, 1080, Math.min(1400, comic.data.image.width)]}
+              sizes="(min-width: 760px) 720px, 100vw"
+              loading={i < 2 ? 'eager' : 'lazy'}
+            />
+          </li>
+        ))
+      }
+      <li class="page end" id="end" aria-label="看完了">
+        <div class="end-card">
+          <p class="end-title">目前就到第 <span class="num">{total}</span> 話</p>
+          <p class="muted">
+            新的一話每週一、四先在{' '}
+            <a href={links.facebook.url} rel="noopener" target="_blank">Facebook 粉絲專頁</a>連載。
+          </p>
+          <p><a class="btn ghost" href="/tongdad/">回到桐爸日記</a></p>
+        </div>
+      </li>
+    </ol>
+
+    <nav class="bar bottom" aria-label="翻頁">
+      <button class="prev" type="button" disabled>上一話</button>
+      <button class="next" type="button">下一話</button>
+    </nav>
+  </div>
 </Base>
 
 <script>
-  // 記住看到第幾話：哪一話的範圍蓋過畫面上方 40% 那條線，就算正在看那一話。
-  // 瀏覽器不給存（無痕、關掉網站資料）就算了，頁面照常能看
+  const pages = document.querySelector<HTMLOListElement>('.pages')!;
+  const items = [...pages.children] as HTMLElement[];
+  const total = items.filter((el) => el.dataset.no).length;
+  const nowNo = document.querySelector<HTMLElement>('.now-no')!;
+  const nowTitle = document.querySelector<HTMLElement>('.now-title')!;
+  const countNo = document.querySelector<HTMLElement>('.count-no')!;
+  const prev = document.querySelector<HTMLButtonElement>('.prev')!;
+  const next = document.querySelector<HTMLButtonElement>('.next')!;
+  // 跟列表頁「接著上次看」同一個 key
   const key = 'tongdad-last-read';
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        const el = entry.target as HTMLElement;
-        try {
-          localStorage.setItem(key, JSON.stringify({ id: el.id, no: Number(el.dataset.no) }));
-        } catch {}
-      }
+  const behavior: ScrollBehavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+  let current = -1;
+
+  const clamp = (i: number) => Math.min(Math.max(i, 0), items.length - 1);
+  // 一頁的寬度用實際量的（手機常是 390.4 這種小數，用整數的 clientWidth 翻到後面會偏掉）
+  const pageWidth = () => items[0].getBoundingClientRect().width;
+  const go = (i: number) => pages.scrollTo({ left: clamp(i) * pageWidth(), behavior });
+
+  function update() {
+    const i = clamp(Math.round(pages.scrollLeft / pageWidth()));
+    if (i === current) return;
+    current = i;
+    const el = items[i];
+    const no = el.dataset.no;
+    nowNo.innerHTML = no ? `第 <span class="num">${no}</span> 話` : '看完了';
+    nowTitle.textContent = el.dataset.title ?? '';
+    countNo.textContent = no ?? String(total);
+    prev.disabled = i === 0;
+    next.disabled = i === items.length - 1;
+    if (no) {
+      history.replaceState(null, '', `#${el.id}`);
+      // 瀏覽器不給存（無痕、關掉網站資料）就算了，照常能看
+      try {
+        localStorage.setItem(key, JSON.stringify({ id: el.id, no: Number(no) }));
+      } catch {}
+    }
+    // 這一話優先載入，前一話和後兩話也先載，翻過去就有圖
+    el.querySelector('img')?.setAttribute('fetchpriority', 'high');
+    for (let j = i - 1; j <= i + 2; j++) {
+      const img = items[j]?.querySelector('img');
+      if (img && img.loading !== 'eager') img.loading = 'eager';
+    }
+  }
+
+  let ticking = false;
+  pages.addEventListener(
+    'scroll',
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        update();
+      });
     },
-    { rootMargin: '-40% 0px -60% 0px' },
+    { passive: true },
   );
-  for (const el of document.querySelectorAll<HTMLElement>('.episode')) observer.observe(el);
+
+  prev.addEventListener('click', () => go(current - 1));
+  next.addEventListener('click', () => go(current + 1));
+
+  // 點畫面右邊三分之一翻下一話、左邊三分之一翻上一話，跟漫畫 App 一樣
+  pages.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a, button')) return;
+    const x = e.clientX / pages.clientWidth;
+    if (x > 2 / 3) go(current + 1);
+    else if (x < 1 / 3) go(current - 1);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+      e.preventDefault();
+      go(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      e.preventDefault();
+      go(current - 1);
+    }
+  });
+
+  // 轉手機方向、拉視窗大小時停在同一話
+  addEventListener('resize', () => {
+    pages.scrollLeft = current * pageWidth();
+  });
+
+  // 網址帶 #某一話（從單篇頁或「接著上次看」來的）就直接翻到那一話
+  const start = items.findIndex((el) => el.dataset.no && el.id === decodeURIComponent(location.hash.slice(1)));
+  if (start > 0) pages.scrollLeft = start * pageWidth();
+  update();
 </script>
 
 <style>
-  .page-head {
-    margin-inline: auto;
-    margin-bottom: 3rem;
+  .reader {
+    display: grid;
+    /* 欄寬要明講 minmax(0, 1fr)，不然標題列不換行的長標題會把整頁撐寬 */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100vh;
+    height: 100dvh;
+    background: var(--mist);
   }
 
-  .crumb {
-    margin-bottom: 0.6rem;
-    font-weight: 500;
+  .bar {
+    background: var(--paper);
+    padding: 0.4rem var(--gutter);
   }
 
-  .page-head h1 {
-    margin-bottom: 0.6rem;
+  .top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: var(--frame);
   }
 
-  .episodes {
+  .back {
+    flex: none;
+    font-weight: 700;
+  }
+
+  .now {
+    /* width: 0 讓長標題不算進最小寬度，只用剩下的空間、超出的用「…」 */
+    flex: 1;
+    width: 0;
+    min-width: 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .now-no {
+    color: var(--ember);
+    margin-right: 0.4rem;
+  }
+
+  .count {
+    flex: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--slate);
+  }
+
+  .pages {
     list-style: none;
     margin: 0;
     padding: 0;
-  }
-
-  .episode + .episode {
-    margin-top: 3.5rem;
-    padding-top: 3rem;
-    border-top: 1px solid var(--rule);
-  }
-
-  .ep-head {
-    margin: 0 auto 1.25rem;
-  }
-
-  .ep-no {
-    margin: 0 0 0.3rem;
-    font-weight: 700;
-    color: var(--ember);
-  }
-
-  .ep-no .num {
-    font-size: 1.5rem;
-    font-weight: 700;
-  }
-
-  .ep-head h2 {
-    font-size: var(--step-2);
-    margin-bottom: 0.4rem;
-  }
-
-  .meta {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 1.25rem;
-    align-items: baseline;
-    margin: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
   }
 
-  .meta time {
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: var(--navy);
+  .pages::-webkit-scrollbar {
+    display: none;
   }
 
-  .comic {
-    max-width: 720px;
-    margin: 0 auto;
-    border: var(--frame);
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: var(--frame-shadow);
-  }
-
-  .comic :global(img) {
-    width: 100%;
-  }
-
-  .story {
-    margin: 1.25rem auto 0;
-  }
-
-  .story summary {
-    display: inline-flex;
+  .page {
+    flex: 0 0 100%;
+    height: 100%;
+    scroll-snap-align: center;
+    /* 用力滑也只翻一頁 */
+    scroll-snap-stop: always;
+    /* 用 flex 置中，圖的 max-height: 100% 才量得到這一頁的高度（grid 置中會量不到，電腦上直式漫畫被切掉） */
+    display: flex;
     align-items: center;
-    min-height: 44px;
-    cursor: pointer;
-    font-weight: 700;
-    color: var(--navy);
-    text-decoration: underline;
-    text-decoration-color: var(--orange);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.22em;
+    justify-content: center;
+    padding: 0.75rem;
+    user-select: none;
   }
 
-  .story summary:hover {
-    color: var(--ember);
+  .page :global(img) {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    background: var(--paper);
+    box-shadow: 0 1px 4px rgb(20 38 63 / 0.18);
   }
 
-  .story[open] summary {
-    margin-bottom: 0.75rem;
-  }
-
-  .full {
-    margin-top: 1.5rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--rule);
-    font-weight: 500;
-  }
-
-  .end {
-    margin: 4rem auto 0;
-    padding-top: 2.5rem;
-    border-top: var(--frame);
+  .end-card {
+    max-width: 26rem;
     text-align: center;
+    user-select: text;
   }
 
   .end-title {
@@ -235,13 +268,39 @@ const jsonLd = [
     margin-bottom: 0.5rem;
   }
 
-  .end .btn {
-    margin-top: 0.5rem;
+  .bottom {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    border-top: var(--frame);
+    padding-bottom: max(0.4rem, env(safe-area-inset-bottom));
   }
 
-  @media (max-width: 560px) {
-    .comic {
-      box-shadow: none;
+  .bottom button {
+    min-height: 48px;
+    padding: 0.3rem 1rem;
+    border: 2px solid var(--navy);
+    border-radius: 8px;
+    background: var(--paper);
+    color: var(--navy);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .bottom .next {
+    background: var(--navy);
+    color: #fff;
+  }
+
+  .bottom button:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  @media (min-width: 760px) {
+    .page {
+      padding: 1.25rem;
     }
   }
 </style>

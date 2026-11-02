@@ -83,7 +83,7 @@ const jsonLd = [
       <figure class="comic">
         <Image src={image} alt={alt} widths={[720, 1080, Math.min(1400, image.width)]} sizes="(min-width: 760px) 720px, 100vw" />
       </figure>
-      <p class="binge read"><a class="btn ghost" href={readUrl(comic)}>從這篇往下連續看</a></p>
+      <p class="binge read"><a class="btn ghost" href={readUrl(comic)}>從這篇開始連續看</a></p>
       <div class="prose story">
         {shown.map((p) => <p>{p.map((l, i) => (i ? [<br />, l] : l))}</p>)}
         {
