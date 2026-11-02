@@ -25,6 +25,10 @@ const score = (topic, p) =>
   [...new Set(norm(topic))].filter((c) => norm((p.message ?? '').split('\n').slice(0, 3).join('')).includes(c)).length +
   (p.message?.includes('#桐爸日記') ? 2 : 0);
 
+// XJack 決定只放冒險日誌、不進漫畫區的貼文（貼文編號底線後那段）
+// 2026-11-02〈從開團到開公司〉下集：有標 #桐爸日記，但講的是魔獸戰友創業，跟上集一起放冒險日誌
+const blogOnly = new Set(['1453616180112935']);
+
 const files = readdirSync(src)
   .filter((f) => /^\d{6}_.+\.(jpe?g|png|webp)$/i.test(f))
   .sort();
@@ -46,6 +50,7 @@ for (const file of files) {
     continue;
   }
   used.add(best.p.post_id);
+  if (blogOnly.has(best.p.post_id.split('_').pop())) continue;
   matched.push({ file, yymmdd, topic, day, post: best.p });
 }
 

@@ -90,7 +90,10 @@ for (const e of edits) {
     .join('\n\n')
     .replace(new RegExp(`${LINK}(\\d+)${LINK}`, 'g'), (_, k) => `[${inline(e.link[k].text)}](${e.link[k].url})`);
 
-  const flat = blocks[0].join('').replace(/\*\*(.+?)\*\*/g, '$1');
+  const flat = blocks[0]
+    .join('')
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(new RegExp(`${LINK}(\\d+)${LINK}`, 'g'), (_, k) => e.link[k].text);
   const excerpt = flat.length > 80 ? `${flat.slice(0, 80)}…` : flat;
 
   const date = tpe(post.created_time);
@@ -101,6 +104,8 @@ for (const e of edits) {
   let cover;
   if (e.image === 'hidden') {
     head.push('<p class="photo-removed">（這裡原本有一張桐桐露臉的照片，為了保護她的隱私，搬家時先拿掉了。）</p>');
+  } else if (e.image === 'none') {
+    // 原圖跟文章無關（例如導流用的廣告圖），不放圖、也不加說明，只做封面
   } else {
     const file = path.join(src, e.image === 'edited' ? 'img-edit' : 'img', `${e.n ? String(e.n).padStart(3, '0') : key}.jpg`);
     await sharp(file).resize({ width: 1400, withoutEnlargement: true }).jpeg({ quality: 80, mozjpeg: true }).toFile(path.join(imgDir, '01.jpg'));
