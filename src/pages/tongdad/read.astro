@@ -1,0 +1,247 @@
+---
+// 連續閱讀：所有漫畫照發表順序排成一長條，從第 1 話一路往下捲。
+// 圖片捲到附近才載入；貼文文字先收起來，不打斷看漫畫的節奏。
+// 這台裝置看到哪一話記在瀏覽器裡，列表頁的「接著上次看」讀同一筆。
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { links } from '../../data/site';
+import { formatDate, getPosts, postUrl } from '../../lib/blog';
+import { comicUrl, getEpisodes, paragraphs } from '../../lib/tongdad';
+
+const episodes = await getEpisodes();
+const posts = await getPosts();
+const last = episodes.at(-1)!;
+
+const jsonLd = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '首頁', item: Astro.site?.href },
+      { '@type': 'ListItem', position: 2, name: '桐爸日記', item: new URL('/tongdad/', Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: '連續閱讀' },
+    ],
+  },
+];
+---
+
+<Base title="連續閱讀｜桐爸日記" description="桐爸日記漫畫從第 1 話開始，照發表順序一話接一話看下去。" jsonLd={jsonLd}>
+  <section class="section">
+    <div class="wrap">
+      <header class="page-head read">
+        <p class="crumb"><a href="/tongdad/">桐爸日記</a></p>
+        <h1>連續閱讀</h1>
+        <p class="muted">
+          從第 1 話開始照發表順序排，往下捲就是下一話，目前一共 <span class="num">{episodes.length}</span> 話。每一話底下可以打開爸爸當天寫的貼文。
+        </p>
+      </header>
+      <ol class="episodes">
+        {
+          episodes.map(({ comic, no }, i) => {
+            const { title, date, image, alt, text, originalUrl } = comic.data;
+            const paras = paragraphs(text);
+            // 同一篇貼文也收進冒險日誌的（長文），只放開頭，全文連過去
+            const article = posts.find((p) => p.data.originalUrl === originalUrl);
+            const shown = article ? paras.slice(0, 2) : paras;
+            return (
+              <li class="episode" id={comic.id} data-no={no}>
+                <header class="ep-head read">
+                  <p class="ep-no">
+                    第 <span class="num">{no}</span> 話
+                  </p>
+                  <h2>{title}</h2>
+                  <p class="meta">
+                    <time class="num" datetime={date.toISOString().slice(0, 10)}>
+                      {formatDate(date)}
+                    </time>
+                    <a href={comicUrl(comic)}>單獨打開這一話</a>
+                  </p>
+                </header>
+                <figure class="comic">
+                  <Image
+                    src={image}
+                    alt={alt}
+                    widths={[720, 1080, Math.min(1400, image.width)]}
+                    sizes="(min-width: 760px) 720px, 100vw"
+                    loading={i === 0 ? 'eager' : 'lazy'}
+                  />
+                </figure>
+                {shown.length > 0 && (
+                  <details class="story read">
+                    <summary>看爸爸當天寫的</summary>
+                    <div class="prose">
+                      {shown.map((p) => <p>{p.map((l, j) => (j ? [<br />, l] : l))}</p>)}
+                      {article && (
+                        <p class="full">
+                          全文收在冒險日誌：<a href={postUrl(article)}>〈{article.data.title}〉</a>
+                        </p>
+                      )}
+                    </div>
+                  </details>
+                )}
+              </li>
+            );
+          })
+        }
+      </ol>
+      <footer class="end read">
+        <p class="end-title">目前就到第 <span class="num">{last.no}</span> 話</p>
+        <p class="muted">
+          新的一話每週一、四先在{' '}
+          <a href={links.facebook.url} rel="noopener" target="_blank">Facebook 粉絲專頁</a>連載。
+        </p>
+        <p><a class="btn ghost" href="/tongdad/">回到桐爸日記</a></p>
+      </footer>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // 記住看到第幾話：哪一話的範圍蓋過畫面上方 40% 那條線，就算正在看那一話。
+  // 瀏覽器不給存（無痕、關掉網站資料）就算了，頁面照常能看
+  const key = 'tongdad-last-read';
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        try {
+          localStorage.setItem(key, JSON.stringify({ id: el.id, no: Number(el.dataset.no) }));
+        } catch {}
+      }
+    },
+    { rootMargin: '-40% 0px -60% 0px' },
+  );
+  for (const el of document.querySelectorAll<HTMLElement>('.episode')) observer.observe(el);
+</script>
+
+<style>
+  .page-head {
+    margin-inline: auto;
+    margin-bottom: 3rem;
+  }
+
+  .crumb {
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+  }
+
+  .page-head h1 {
+    margin-bottom: 0.6rem;
+  }
+
+  .episodes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .episode + .episode {
+    margin-top: 3.5rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .ep-head {
+    margin: 0 auto 1.25rem;
+  }
+
+  .ep-no {
+    margin: 0 0 0.3rem;
+    font-weight: 700;
+    color: var(--ember);
+  }
+
+  .ep-no .num {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .ep-head h2 {
+    font-size: var(--step-2);
+    margin-bottom: 0.4rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    align-items: baseline;
+    margin: 0;
+  }
+
+  .meta time {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .comic {
+    max-width: 720px;
+    margin: 0 auto;
+    border: var(--frame);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: var(--frame-shadow);
+  }
+
+  .comic :global(img) {
+    width: 100%;
+  }
+
+  .story {
+    margin: 1.25rem auto 0;
+  }
+
+  .story summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--navy);
+    text-decoration: underline;
+    text-decoration-color: var(--orange);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.22em;
+  }
+
+  .story summary:hover {
+    color: var(--ember);
+  }
+
+  .story[open] summary {
+    margin-bottom: 0.75rem;
+  }
+
+  .full {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    font-weight: 500;
+  }
+
+  .end {
+    margin: 4rem auto 0;
+    padding-top: 2.5rem;
+    border-top: var(--frame);
+    text-align: center;
+  }
+
+  .end-title {
+    font-family: var(--font-head);
+    font-weight: 900;
+    font-size: var(--step-2);
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+  }
+
+  .end .btn {
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 560px) {
+    .comic {
+      box-shadow: none;
+    }
+  }
+</style>

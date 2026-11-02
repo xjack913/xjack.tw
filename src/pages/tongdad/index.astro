@@ -32,6 +32,10 @@ const jsonLd = [
           <a href={links.facebook.url} rel="noopener" target="_blank">Facebook 粉絲專頁</a>連載，一共{' '}
           <span class="num">{comics.length}</span> 篇。素材由桐桐無償提供，爸爸負責被吐槽。
         </p>
+        <p class="actions">
+          <a class="btn" href="/tongdad/read/">從第 1 話開始看</a>
+          <a class="btn ghost" href="/tongdad/read/" data-resume hidden>接著上次看</a>
+        </p>
       </header>
       {
         [...byMonth].map(([month, list]) => (
@@ -56,9 +60,34 @@ const jsonLd = [
   </section>
 </Base>
 
+<script>
+  // 連續閱讀頁記下的進度（同一個 key），有看過才出現「接著上次看」
+  const resume = document.querySelector<HTMLAnchorElement>('[data-resume]');
+  try {
+    const last = JSON.parse(localStorage.getItem('tongdad-last-read') ?? 'null');
+    if (resume && /^\d{6}(-\d+)?$/.test(last?.id) && Number.isInteger(last?.no)) {
+      resume.href = `/tongdad/read/#${last.id}`;
+      resume.textContent = `接著上次看：第 ${last.no} 話`;
+      resume.hidden = false;
+    }
+  } catch {}
+</script>
+
 <style>
   .page-head {
     margin-bottom: 2.5rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+  }
+
+  /* .btn 的 display 會蓋過 hidden，要明講 */
+  .actions [hidden] {
+    display: none;
   }
 
   .month + .month {

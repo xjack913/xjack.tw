@@ -2,7 +2,7 @@
 import { Image, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import { formatDate, getPosts, postUrl } from '../../lib/blog';
-import { comicUrl, getComics, paragraphs, type Comic } from '../../lib/tongdad';
+import { comicUrl, getComics, paragraphs, readUrl, type Comic } from '../../lib/tongdad';
 
 export async function getStaticPaths() {
   const comics = await getComics();
@@ -83,6 +83,7 @@ const jsonLd = [
       <figure class="comic">
         <Image src={image} alt={alt} widths={[720, 1080, Math.min(1400, image.width)]} sizes="(min-width: 760px) 720px, 100vw" />
       </figure>
+      <p class="binge read"><a class="btn ghost" href={readUrl(comic)}>從這篇往下連續看</a></p>
       <div class="prose story">
         {shown.map((p) => <p>{p.map((l, i) => (i ? [<br />, l] : l))}</p>)}
         {
@@ -132,10 +133,16 @@ const jsonLd = [
 
 <style>
   .head,
+  .binge,
   .story,
   .en,
   .pager {
     margin-inline: auto;
+  }
+
+  .binge {
+    margin-top: -0.5rem;
+    margin-bottom: 2rem;
   }
 
   .head {

@@ -10,6 +10,14 @@ export async function getComics() {
   return comics.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || b.id.localeCompare(a.id));
 }
 
+/** 連續閱讀用：舊的在前，最早的一篇是第 1 話。之後補收更早的漫畫，後面的話數會跟著往後移 */
+export async function getEpisodes() {
+  return (await getComics()).reverse().map((comic, i) => ({ comic, no: i + 1 }));
+}
+
+/** 連續閱讀頁裡某一話的位置 */
+export const readUrl = (comic: Comic) => `/tongdad/read/#${comic.id}`;
+
 /** 貼文文字切段：空行分段，段內的換行保留 */
 export const paragraphs = (text: string) =>
   text
