@@ -1,0 +1,242 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import { formatDate, getPosts, postUrl } from '../../lib/blog';
+import { comicUrl, getComics, paragraphs, type Comic } from '../../lib/tongdad';
+
+export async function getStaticPaths() {
+  const comics = await getComics();
+  const posts = await getPosts();
+  return comics.map((comic, i) => ({
+    params: { slug: comic.id },
+    props: {
+      comic,
+      newer: comics[i - 1],
+      older: comics[i + 1],
+      // 同一篇貼文也收進冒險日誌的（長文），這裡只放開頭，全文連過去
+      article: posts.find((p) => p.data.originalUrl === comic.data.originalUrl),
+    },
+  }));
+}
+
+interface Props {
+  comic: Comic;
+  newer?: Comic;
+  older?: Comic;
+  article?: Awaited<ReturnType<typeof getPosts>>[number];
+}
+
+const { comic, newer, older, article } = Astro.props;
+const { title, date, image, alt, originalUrl, text, titleEn, textEn, imageEn } = comic.data;
+const iso = date.toISOString().slice(0, 10);
+const paras = paragraphs(text);
+const shown = article ? paras.slice(0, 2) : paras;
+// 搜尋描述：貼文開頭 120 字
+const flat = paras.flat().join(' ');
+const description = [...flat].length > 120 ? `${[...flat].slice(0, 119).join('')}…` : flat || `桐爸日記漫畫〈${title}〉`;
+// 分享圖另外轉一張 JPG（跟冒險日誌一樣，原檔只被轉成 WebP 的話 FB／LINE 會抓不到）
+const ogImage = (await getImage({ src: image, width: Math.min(1200, image.width), format: 'jpg' })).src;
+
+const url = new URL(comicUrl(comic), Astro.site).href;
+const personRef = { '@type': 'Person', '@id': new URL('/#person', Astro.site).href, name: '叉傑克 XJack', url: Astro.site?.href };
+const jsonLd = [
+  {
+    '@type': 'BlogPosting',
+    '@id': `${url}#article`,
+    headline: title,
+    description,
+    datePublished: iso,
+    inLanguage: 'zh-Hant-TW',
+    url,
+    mainEntityOfPage: url,
+    image: new URL(ogImage, Astro.site).href,
+    author: personRef,
+    publisher: personRef,
+    isPartOf: { '@type': 'CreativeWorkSeries', name: '桐爸日記', url: new URL('/tongdad/', Astro.site).href },
+    isBasedOn: originalUrl,
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: '首頁', item: Astro.site?.href },
+      { '@type': 'ListItem', position: 2, name: '桐爸日記', item: new URL('/tongdad/', Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: title },
+    ],
+  },
+];
+---
+
+<Base title={`${title}｜桐爸日記`} description={description} type="article" published={iso} image={ogImage} jsonLd={jsonLd}>
+  <article class="section">
+    <div class="wrap">
+      <header class="head read">
+        <p class="crumb"><a href="/tongdad/">桐爸日記</a></p>
+        <h1>{title}</h1>
+        <p class="meta">
+          <time class="num" datetime={iso}>{formatDate(date)}</time>
+          <span class="muted">
+            原刊於
+            <a href={originalUrl} target="_blank" rel="noopener">「叉傑克 XJack 粉專」</a>
+          </span>
+        </p>
+      </header>
+      <figure class="comic">
+        <Image src={image} alt={alt} widths={[720, 1080, Math.min(1400, image.width)]} sizes="(min-width: 760px) 720px, 100vw" />
+      </figure>
+      <div class="prose story">
+        {shown.map((p) => <p>{p.map((l, i) => (i ? [<br />, l] : l))}</p>)}
+        {
+          article && (
+            <p class="full">
+              全文收在冒險日誌：<a href={postUrl(article)}>〈{article.data.title}〉</a>
+            </p>
+          )
+        }
+      </div>
+      {
+        (titleEn || textEn || imageEn) && (
+          <section class="en read" lang="en" aria-label="English">
+            <h2>{titleEn ?? 'English'}</h2>
+            {imageEn && (
+              <figure class="comic">
+                <Image src={imageEn} alt={titleEn ?? alt} widths={[720, 1080]} sizes="(min-width: 760px) 720px, 100vw" />
+              </figure>
+            )}
+            {textEn && paragraphs(textEn).map((p) => <p>{p.map((l, i) => (i ? [<br />, l] : l))}</p>)}
+          </section>
+        )
+      }
+      <nav class="pager read" aria-label="上一篇與下一篇">
+        {
+          older ? (
+            <a href={comicUrl(older)} rel="prev">
+              <span class="muted">較舊的一篇</span>
+              <span class="t">{older.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )
+        }
+        {
+          newer ? (
+            <a href={comicUrl(newer)} rel="next" class="right">
+              <span class="muted">較新的一篇</span>
+              <span class="t">{newer.data.title}</span>
+            </a>
+          ) : null
+        }
+      </nav>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .head,
+  .story,
+  .en,
+  .pager {
+    margin-inline: auto;
+  }
+
+  .head {
+    margin-bottom: 2rem;
+  }
+
+  .crumb {
+    margin-bottom: 0.6rem;
+    font-weight: 500;
+  }
+
+  h1 {
+    font-size: var(--step-3);
+    margin-bottom: 0.8rem;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    align-items: baseline;
+  }
+
+  .meta time {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .comic {
+    max-width: 720px;
+    margin: 0 auto 2rem;
+    border: var(--frame);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: var(--frame-shadow);
+  }
+
+  .comic :global(img) {
+    width: 100%;
+  }
+
+  .full {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    font-weight: 500;
+  }
+
+  .en {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .en h2 {
+    font-size: var(--step-1);
+    margin-bottom: 1rem;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 4rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .pager a {
+    display: grid;
+    gap: 0.2rem;
+    text-decoration: none;
+  }
+
+  .pager .right {
+    text-align: right;
+  }
+
+  .pager .t {
+    font-family: var(--font-head);
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .pager a:hover .t {
+    text-decoration: underline;
+    text-decoration-color: var(--orange);
+  }
+
+  @media (max-width: 560px) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+
+    .pager .right {
+      text-align: left;
+    }
+
+    .comic {
+      box-shadow: none;
+    }
+  }
+</style>

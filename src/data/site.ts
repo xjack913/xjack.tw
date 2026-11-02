@@ -61,12 +61,14 @@ export const pageDescriptions = {
   timeline: '叉傑克 XJack 從東華新手村、創立 RQ 跑力、當上桐爸到今天解鎖的每一個成就。',
   projects: '叉傑克 XJack 做出來的東西：RQ 跑力、跟岳母的十年之約、桐桐貓貓島、桐爸日記與更多。',
   blog: '叉傑克 XJack 十年來寫的訓練日誌、比賽心得、馬拉松數據分析、創業、育兒與投資文章。',
+  tongdad: '桐爸日記：叉傑克 XJack 把女兒桐桐的童言童語和家裡的小事畫成漫畫，每週一、四連載。',
 };
 
-// 選單：遊戲角色檔案的說法，第一次來的人也看得懂
+// 選單：遊戲角色檔案的說法，第一次來的人也看得懂；桐爸日記是連載名，直接用（2026-11-02 XJack）
 export const nav = [
   { href: '/about/', label: '角色檔案' },
   { href: '/timeline/', label: '成就' },
   { href: '/projects/', label: '裝備' },
   { href: '/blog/', label: '冒險日誌' },
+  { href: '/tongdad/', label: '桐爸日記' },
 ];

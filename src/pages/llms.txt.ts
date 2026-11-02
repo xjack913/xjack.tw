@@ -23,6 +23,7 @@ export const GET: APIRoute = async ({ site }) => {
     `- [成就](${abs('/timeline/')})：${pageDescriptions.timeline}`,
     `- [裝備](${abs('/projects/')})：${pageDescriptions.projects}`,
     `- [冒險日誌](${abs('/blog/')})：${pageDescriptions.blog}`,
+    `- [桐爸日記](${abs('/tongdad/')})：${pageDescriptions.tongdad}`,
     '',
     '## 冒險日誌（新到舊）',
     '',

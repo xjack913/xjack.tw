@@ -25,4 +25,24 @@ const blog = defineCollection({
     }),
 });
 
-export const collections = { blog };
+// 桐爸日記漫畫：雲端漫畫典藏的定稿，配臉書貼文的文字（scripts/import-tongdad.mjs 匯入）。
+// 一張一頁，網址用發表日期（/tongdad/261026/），同一天第二張加 -2。
+const tongdad = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/tongdad' }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      date: z.coerce.date(),
+      image: image(),
+      alt: z.string(),
+      originalUrl: z.string(),
+      // 臉書貼文的文字，去掉標題行和 hashtag；空行分段
+      text: z.string().default(''),
+      // 英文版（之後做雙語時填）：英文標題、圖下的英文對白、英文版漫畫圖
+      titleEn: z.string().optional(),
+      textEn: z.string().optional(),
+      imageEn: image().optional(),
+    }),
+});
+
+export const collections = { blog, tongdad };

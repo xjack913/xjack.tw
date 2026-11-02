@@ -77,8 +77,8 @@ export const projects: Project[] = [
     quality: 'rare',
     summary: '把桐桐每天冒出來的金句和家裡的小事畫成多格漫畫，每週一、四在粉絲專頁連載。',
     flavor: '素材由桐桐無償提供，爸爸負責被吐槽。',
-    url: 'https://www.facebook.com/rqxjack',
-    urlLabel: '到粉絲專頁看漫畫',
+    url: '/tongdad/',
+    urlLabel: '看全部漫畫',
     // 預覽圖：雲端「桐爸日記漫畫」典藏裡三篇已發表的（260301、260303、260312）
     image: '/images/projects/tongba-diary.jpg',
     imageAlt: '三篇桐爸日記漫畫：〈升級只差 2396 步〉、〈桐桐的人生優先順序〉、〈男子廁所守護神〉',

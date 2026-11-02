@@ -112,8 +112,10 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
       gap: 0;
     }
 
+    /* 五個選項在 360px 寬的手機也排得下一行 */
     nav a {
-      padding: 0.3rem 0.55rem;
+      padding: 0.3rem 0.3rem;
+      font-size: 1rem;
     }
   }
 </style>
