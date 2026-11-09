@@ -70,7 +70,7 @@ export default defineConfig({
   integrations: [
     markdownFirstImage,
     sitemap({
-      filter: (page) => !new URL(page).pathname.startsWith('/w/'),
+      filter: (page) => !/^\/(w|web)\//.test(new URL(page).pathname),
       serialize(item) {
         const date = lastmods.get(decodeURI(new URL(item.url).pathname));
         if (date) item.lastmod = new Date(`${date}T00:00:00+08:00`).toISOString();
@@ -84,6 +84,8 @@ export default defineConfig({
     '/web/xjack/home': '/',
     '/web/xjack/member': '/about/',
     '/web/xjack/contact': '/about/#contact',
+    // 〈從開團到開公司〉下集原本在漫畫區，2026-11-02 改放冒險日誌；Google 已收過舊網址（2026-11-09 Search Console 回報 404）
+    '/tongdad/260508': '/blog/fb-1453616180112935/',
   },
   markdown: {
     shikiConfig: { theme: 'github-light' },
