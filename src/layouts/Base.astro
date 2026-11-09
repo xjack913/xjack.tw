@@ -16,6 +16,8 @@ interface Props {
   jsonLd?: Record<string, unknown>[];
   /** 不放頁首頁尾，整個畫面給內容（桐爸日記連續閱讀） */
   bare?: boolean;
+  /** 只在這一頁補進人物資料的欄位（角色檔案頁的媒體報導 subjectOf） */
+  personExtra?: Record<string, unknown>;
 }
 
 const {
@@ -27,6 +29,7 @@ const {
   fullIdentity = false,
   jsonLd = [],
   bare = false,
+  personExtra = {},
 } = Astro.props;
 
 const siteTitle = `${person.name} ${person.nameEn}`;
@@ -54,6 +57,7 @@ const personLd = {
   knowsAbout: person.knowsAbout,
   // LinkedIn 網址裡有本名，跟 alternateName 一樣只在帶本名的頁面放
   sameAs: [links.facebook.url, links.instagram.url, links.youtube.url, links.medium.url, ...(fullIdentity ? [links.linkedin.url] : []), links.github.url],
+  ...personExtra,
 };
 // 網站名稱：Google 搜尋結果上方顯示的站名
 const websiteLd = {
@@ -83,6 +87,7 @@ const graph = { '@context': 'https://schema.org', '@graph': [personLd, websiteLd
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="alternate" type="application/rss+xml" title={`${person.name}的文章`} href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="桐爸日記漫畫" href="/tongdad/rss.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#1e3a5f" />
 

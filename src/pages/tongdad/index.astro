@@ -2,7 +2,7 @@
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import { links, pageDescriptions } from '../../data/site';
-import { comicUrl, getComics, monthLabel, type Comic } from '../../lib/tongdad';
+import { comicUrl, getComics, monthLabel, seriesId, type Comic } from '../../lib/tongdad';
 
 const comics = await getComics();
 // 依月份分段，新的月份在前
@@ -11,7 +11,30 @@ for (const c of comics) {
   const key = monthLabel(c.data.date);
   byMonth.set(key, [...(byMonth.get(key) ?? []), c]);
 }
+// 合集頁＋「桐爸日記」這個連載本身（固定 @id，每一話的 isPartOf 指回來），作者是 Base 裡的那個人
+const url = new URL('/tongdad/', Astro.site).href;
 const jsonLd = [
+  {
+    '@type': 'CollectionPage',
+    '@id': url,
+    name: '桐爸日記',
+    description: pageDescriptions.tongdad,
+    url,
+    inLanguage: 'zh-Hant-TW',
+    isPartOf: { '@id': new URL('/#website', Astro.site).href },
+    about: { '@id': seriesId(Astro.site) },
+  },
+  {
+    '@type': 'CreativeWorkSeries',
+    '@id': seriesId(Astro.site),
+    name: '桐爸日記',
+    alternateName: "Tong Dad's Diary",
+    description: pageDescriptions.tongdad,
+    url,
+    genre: '漫畫',
+    inLanguage: 'zh-Hant-TW',
+    author: { '@id': new URL('/#person', Astro.site).href },
+  },
   {
     '@type': 'BreadcrumbList',
     itemListElement: [

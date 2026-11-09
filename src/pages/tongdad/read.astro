@@ -26,6 +26,8 @@ const jsonLd = [
 
 <Base title="連續閱讀｜桐爸日記" description="桐爸日記漫畫從第 1 話開始，一頁一話翻下去。" jsonLd={jsonLd} bare>
   <div class="reader">
+    {/* 畫面上不顯示，給螢幕閱讀器和搜尋引擎一個頁面標題 */}
+    <h1 class="visually-hidden">桐爸日記連續閱讀</h1>
     <header class="bar top">
       <a class="back" href="/tongdad/">桐爸日記</a>
       <p class="now" aria-live="polite">

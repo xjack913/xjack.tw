@@ -36,12 +36,39 @@ function contentDates() {
 }
 const lastmods = contentDates();
 
+// 文章裡的第一張圖多半就在手機第一屏，Astro 預設全部延後載入（lazy），會拖慢 Google 量的 LCP。
+// 每篇只把第一張改成馬上載入、優先下載。外掛物件是所有文章共用的，用每篇各自的 ctx.data.astro 認「新的一篇」。
+const seenDocs = new WeakSet();
+const firstImageEager = {
+  name: 'first-image-eager',
+  element: {
+    filter: ['img'],
+    visit(node, ctx) {
+      const doc = ctx.data?.astro;
+      if (!doc || seenDocs.has(doc)) return;
+      seenDocs.add(doc);
+      ctx.setProperty(node, 'loading', 'eager');
+      ctx.setProperty(node, 'fetchpriority', 'high');
+    },
+  },
+};
+// 掛在預設的 Markdown 處理器（Sätteri）上，要排在它自己的圖片處理之前，屬性才會帶進最後的 <img>
+const markdownFirstImage = {
+  name: 'markdown-first-image-eager',
+  hooks: {
+    'astro:config:setup': ({ config }) => {
+      config.markdown.processor.options.hastPlugins.push(firstImageEager);
+    },
+  },
+};
+
 export default defineConfig({
   site,
   trailingSlash: 'ignore',
   build: { format: 'directory' },
   // 舊網址轉址頁不放進網站地圖
   integrations: [
+    markdownFirstImage,
     sitemap({
       filter: (page) => !new URL(page).pathname.startsWith('/w/'),
       serialize(item) {

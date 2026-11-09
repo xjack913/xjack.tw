@@ -2,6 +2,7 @@
 // 角色檔案（關於我）：本名只在這一頁出現
 import Base from '../layouts/Base.astro';
 import { person, links } from '../data/site';
+import { getPosts, postUrl, tagUrl, topicTags } from '../lib/blog';
 import { profile, story, beliefs, english } from '../data/about';
 import { media } from '../data/media';
 import { education, publications, patents } from '../data/academic';
@@ -13,6 +14,34 @@ const profileLd = {
   url: new URL('/about/', Astro.site).href,
   mainEntity: { '@id': new URL('/#person', Astro.site).href },
 };
+
+// 有原始網址的媒體報導、Podcast、演講，寫進人物的 subjectOf：第三方來源幫忙證明「叉傑克是誰」。
+// 影片和演講用一般的 CreativeWork，免得 Google 拿影片的必填欄位（縮圖、上傳日期）來挑錯
+const mediaLd = media
+  .filter((m) => m.url)
+  .map((m) => ({
+    '@type': m.kind === 'Podcast' ? 'PodcastEpisode' : m.kind === '報導' || m.kind === '專訪' ? 'Article' : 'CreativeWork',
+    name: m.title,
+    url: m.url,
+    datePublished: m.date,
+    ...(m.outlet &&
+      (m.kind === 'Podcast'
+        ? { partOfSeries: { '@type': 'PodcastSeries', name: m.outlet } }
+        : { publisher: { '@type': 'Organization', name: m.outlet } })),
+  }));
+
+// 每章的延伸閱讀：站內網址換成標題，找不到就讓建置失敗，免得放出死連結
+const posts = await getPosts();
+const tags = topicTags(posts).map((t) => t.tag);
+const pages: Record<string, string> = { '/tongdad/': '桐爸日記' };
+const readingLink = (href: string) => {
+  const post = posts.find((p) => postUrl(p) === href);
+  const tag = tags.find((t) => decodeURI(tagUrl(t)) === href);
+  const label = post ? `〈${post.data.title}〉` : tag ? `主題「${tag}」` : pages[href];
+  if (!label) throw new Error(`角色檔案的延伸閱讀找不到 ${href}`);
+  return { href, label };
+};
+const chapters = story.map((s) => ({ ...s, links: s.reading.map(readingLink) }));
 ---
 
 <Base
@@ -20,6 +49,7 @@ const profileLd = {
   fullIdentity
   description={`${person.name} ${person.nameEn}（本名${person.realName}）：${person.intro}`}
   jsonLd={[profileLd]}
+  personExtra={{ subjectOf: mediaLd }}
 >
   <section class="section band">
     <div class="wrap">
@@ -56,7 +86,7 @@ const profileLd = {
       <h2 class="block-title">主線劇情</h2>
       <ol class="story">
         {
-          story.map((s, i) => (
+          chapters.map((s, i) => (
             <li class="chapter">
               <p class="num idx">第 {i + 1} 章</p>
               <div class="read">
@@ -64,6 +94,10 @@ const profileLd = {
                 {s.paragraphs.map((p) => (
                   <p>{p}</p>
                 ))}
+                <p class="see">
+                  延伸閱讀：
+                  {s.links.map((l, j) => [j ? '、' : '', <a href={l.href}>{l.label}</a>])}
+                </p>
               </div>
             </li>
           ))
@@ -312,6 +346,13 @@ const profileLd = {
     font-size: var(--step-2);
     font-weight: 900;
     margin-bottom: 0.75rem;
+  }
+
+  .see {
+    font-size: var(--step--1);
+    line-height: 1.8;
+    color: var(--slate);
+    margin-top: 0.25rem;
   }
 
   .next {

@@ -2,7 +2,7 @@
 import { Image, getImage } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import { formatDate, getPosts, postUrl } from '../../lib/blog';
-import { comicUrl, getComics, paragraphs, readUrl, type Comic } from '../../lib/tongdad';
+import { comicSummary, comicUrl, getComics, paragraphs, readUrl, seriesId, type Comic } from '../../lib/tongdad';
 
 export async function getStaticPaths() {
   const comics = await getComics();
@@ -32,8 +32,7 @@ const iso = date.toISOString().slice(0, 10);
 const paras = paragraphs(text);
 const shown = article ? paras.slice(0, 2) : paras;
 // 搜尋描述：貼文開頭 120 字
-const flat = paras.flat().join(' ');
-const description = [...flat].length > 120 ? `${[...flat].slice(0, 119).join('')}…` : flat || `桐爸日記漫畫〈${title}〉`;
+const description = comicSummary(comic);
 // 分享圖另外轉一張 JPG（跟冒險日誌一樣，原檔只被轉成 WebP 的話 FB／LINE 會抓不到）
 const ogImage = (await getImage({ src: image, width: Math.min(1200, image.width), format: 'jpg' })).src;
 
@@ -52,7 +51,7 @@ const jsonLd = [
     image: new URL(ogImage, Astro.site).href,
     author: personRef,
     publisher: personRef,
-    isPartOf: { '@type': 'CreativeWorkSeries', name: '桐爸日記', url: new URL('/tongdad/', Astro.site).href },
+    isPartOf: { '@type': 'CreativeWorkSeries', '@id': seriesId(Astro.site), name: '桐爸日記', url: new URL('/tongdad/', Astro.site).href },
     isBasedOn: originalUrl,
   },
   {
@@ -81,7 +80,15 @@ const jsonLd = [
         </p>
       </header>
       <figure class="comic">
-        <Image src={image} alt={alt} widths={[720, 1080, Math.min(1400, image.width)]} sizes="(min-width: 760px) 720px, 100vw" />
+        {/* 漫畫是這頁的主角、手機第一屏就看得到：馬上載入、優先下載（Google 的 LCP） */}
+        <Image
+          src={image}
+          alt={alt}
+          widths={[720, 1080, Math.min(1400, image.width)]}
+          sizes="(min-width: 760px) 720px, 100vw"
+          loading="eager"
+          fetchpriority="high"
+        />
       </figure>
       <p class="binge read"><a class="btn ghost" href={readUrl(comic)}>從這篇開始連續看</a></p>
       <div class="prose story">
